@@ -38,6 +38,23 @@
 
 Examples: `feature/account-entity`, `fix/flyway-migration-order`, `chore/ci-setup`
 
+## Pull requests
+
+**Title** — use the same prefix as the branch, followed by a short description:
+
+```
+feat: add percentage-based budgeting
+fix: flyway migration order
+chore: set up CI pipeline
+```
+
+**Description** — briefly cover:
+- What changed and why
+- Any decisions or trade-offs worth noting
+- How to test it manually (if applicable)
+
+Keep PRs small and focused on a single concern. One feature or fix per PR.
+
 ## API development
 
 This project uses contract-first development. All API changes must start with an update to `backend/core-api/src/main/resources/openapi/openapi.yaml`. Do not add endpoints or modify request/response shapes without updating the spec first.
