@@ -51,9 +51,6 @@ logging:
     com.fennixs.coreapi: INFO
     org.springframework.security: WARN
     org.flywaydb: INFO
-  structured:
-    format:
-      console: logstash
 
 springdoc:
   api-docs:

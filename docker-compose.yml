@@ -1,4 +1,26 @@
 services:
+  app:
+    image: ghcr.io/rodrigouma04/fennixs-backend:latest
+    ports: 
+      - "${BACKEND_PORT:-8080}:8080"
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      ALLOW_REGISTRATION: ${ALLOW_REGISTRATION:-false}
+      TIMEZONE: ${TIMEZONE:-UTC}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ${LOGGING_STRUCTURED_FORMAT_CONSOLE:-}
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s 
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
   database:
     container_name: fennixsdb
     image: postgres:18
@@ -6,10 +28,15 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s   
+      retries: 5
+      start_period: 10s
+
 
 volumes:
   postgres_data:

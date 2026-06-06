@@ -19,6 +19,6 @@ springdoc:
 logging:
   level:
     root: INFO
-    com.rodruma.finance: DEBUG
+    com.fennixs.coreapi: DEBUG
     org.springframework.security: DEBUG
     org.flywaydb: DEBUG
