@@ -24,9 +24,23 @@
 
 ## Workflow
 
-- Branch off `main` for every feature or fix
+- Branch off `main` for every change
 - Open a PR. CI must pass before merging
 - No direct pushes to `main`
+
+## Branch naming
+
+| Prefix | Use |
+|---|---|
+| `feature/` | New functionality |
+| `fix/` | Bug fixes |
+| `chore/` | Infrastructure, config, tooling, documentation |
+
+Examples: `feature/account-entity`, `fix/flyway-migration-order`, `chore/ci-setup`
+
+## API development
+
+This project uses contract-first development. All API changes must start with an update to `backend/core-api/src/main/resources/openapi/openapi.yaml`. Do not add endpoints or modify request/response shapes without updating the spec first.
 
 ## Code style
 
