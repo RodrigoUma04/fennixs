@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: spotless
+        name: Spotless
+        language: system
+        entry: bash -c 'cd backend/core-api && ./mvnw spotless:apply'
+        files: \.(java|yaml|yml|sql)$
+        pass_filenames: false
