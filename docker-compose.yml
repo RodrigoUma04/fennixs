@@ -1,0 +1,15 @@
+services:
+  database:
+    container_name: fennixsdb
+    image: postgres:18
+    environment:
+      POSTGRES_DB: fennixsdb
+      POSTGRES_USER: fennixs
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+volumes:
+  postgres_data:
