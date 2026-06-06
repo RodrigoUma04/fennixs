@@ -1,0 +1,7 @@
+{
+  "packages": {
+    "backend/core-api": {
+      "release-type": "maven"
+    }
+  }
+}
