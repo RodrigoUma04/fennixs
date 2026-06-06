@@ -40,15 +40,23 @@ Examples: `feature/account-entity`, `fix/flyway-migration-order`, `chore/ci-setu
 
 ## Pull requests
 
-**Title** — use the same prefix as the branch, followed by a short description:
+**Title** must follow the conventional commits format. A bot enforces this and will fail the PR if it doesn't match:
 
 ```
 feat: add percentage-based budgeting
 fix: flyway migration order
 chore: set up CI pipeline
+feat!: rename transaction API (breaking change)
 ```
 
-**Description** — briefly cover:
+| Prefix | When to use                                                 |
+|---|-------------------------------------------------------------|
+| `feat:` | New functionality                                           |
+| `fix:` | Bug fix                                                     |
+| `chore:` | Infrastructure, config, tooling, documentation              |
+| `feat!:` / `fix!:` | Breaking change. Appending `!` signals a major version bump |
+
+**Description** — required, must not be empty. Briefly cover:
 - What changed and why
 - Any decisions or trade-offs worth noting
 - How to test it manually (if applicable)
