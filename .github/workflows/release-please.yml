@@ -7,10 +7,10 @@ on:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: write
       pull-requests: write
     steps:
       - uses: googleapis/release-please-action@v4
-        with:
-          release-type: maven
