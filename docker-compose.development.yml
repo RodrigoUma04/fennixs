@@ -3,9 +3,9 @@ services:
     container_name: fennixsdb
     image: postgres:18
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: fennixsdb
+      POSTGRES_USER: fennixs
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
