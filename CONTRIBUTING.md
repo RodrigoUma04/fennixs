@@ -65,7 +65,14 @@ Keep PRs small and focused on a single concern. One feature or fix per PR.
 
 ## API development
 
-This project uses contract-first development. All API changes must start with an update to `backend/core-api/src/main/resources/openapi/openapi.yaml`. Do not add endpoints or modify request/response shapes without updating the spec first.
+This project uses contract-first development. All API changes must start with an update to the relevant OpenAPI spec for the service being modified:
+
+| Service | Spec location |
+|---|---|
+| `core-api` | `backend/core-api/src/main/resources/openapi/openapi.yaml` |
+| `auth` | `backend/auth/src/main/resources/openapi/openapi.yaml` |
+
+Do not add endpoints or modify request/response shapes without updating the spec first.
 
 ## Code style
 

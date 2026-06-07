@@ -23,6 +23,10 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build, test and lint core api
+      - name: Build, test and lint core-api
         working-directory: backend/core-api
+        run: ./mvnw verify
+
+      - name: Build, test and lint auth
+        working-directory: backend/auth
         run: ./mvnw verify

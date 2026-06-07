@@ -2,6 +2,9 @@
   "packages": {
     "backend/core-api": {
       "release-type": "maven"
+    },
+    "backend/auth": {
+      "release-type": "maven"
     }
   }
 }

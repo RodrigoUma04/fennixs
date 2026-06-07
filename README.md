@@ -22,7 +22,6 @@ A self-hosted personal finance tracker. Track accounts, transactions, budgets, a
 
 2. Edit `.env` and set your values:
    ```env
-   DB_NAME=fennixsdb
    DB_USERNAME=fennixs
    DB_PASSWORD=your-strong-password
    ```
@@ -32,18 +31,22 @@ A self-hosted personal finance tracker. Track accounts, transactions, budgets, a
    docker compose up -d
    ```
 
-The API will be available at `http://localhost:8080`.
+| Service | Default URL |
+|---|---|
+| Auth | `http://localhost:8081` |
+| Core API | `http://localhost:8082` |
 
 ### Environment variables
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `DB_NAME` | yes | — | PostgreSQL database name |
 | `DB_USERNAME` | yes | — | PostgreSQL username |
 | `DB_PASSWORD` | yes | — | PostgreSQL password |
-| `BACKEND_PORT` | no | `8080` | Port exposed on the host |
+| `AUTH_PORT` | no | `8081` | Host port for the auth service |
+| `CORE_PORT` | no | `8082` | Host port for the core API |
 | `ALLOW_REGISTRATION` | no | `false` | Allow new user sign-ups |
 | `TIMEZONE` | no | `UTC` | App timezone (e.g. `Europe/Brussels`) |
+| `HEALTH_SHOW_DETAILS` | no | `never` | Set to `always` to expose full health details |
 | `LOGGING_STRUCTURED_FORMAT_CONSOLE` | no | — | Set to `logstash`, `ecs`, or `gelf` for structured logs |
 
 ## Contributing
