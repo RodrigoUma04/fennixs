@@ -4,6 +4,6 @@ repos:
       - id: spotless
         name: Spotless
         language: system
-        entry: bash -c 'cd backend/core-api && ./mvnw spotless:apply; cd ../auth && ./mvnw spotless:apply'
+        entry: bash -c 'cd backend/core-api && ./mvnw spotless:apply && cd ../auth && ./mvnw spotless:apply'
         files: \.(java|yaml|yml|sql)$
         pass_filenames: false
