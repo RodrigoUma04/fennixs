@@ -16,11 +16,13 @@ A self-hosted personal finance tracker. Track accounts, transactions, budgets, a
 **Requirements:** Docker and Docker Compose.
 
 1. Copy the example environment file:
+
    ```bash
    cp .env.example .env
    ```
 
 2. Edit `.env` and set your values:
+
    ```env
    DB_USERNAME=fennixs
    DB_PASSWORD=your-strong-password
@@ -31,23 +33,23 @@ A self-hosted personal finance tracker. Track accounts, transactions, budgets, a
    docker compose up -d
    ```
 
-| Service | Default URL |
-|---|---|
-| Auth | `http://localhost:8081` |
+| Service  | Default URL             |
+| -------- | ----------------------- |
+| Auth     | `http://localhost:8081` |
 | Core API | `http://localhost:8082` |
 
 ### Environment variables
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `DB_USERNAME` | yes | — | PostgreSQL username |
-| `DB_PASSWORD` | yes | — | PostgreSQL password |
-| `AUTH_PORT` | no | `8081` | Host port for the auth service |
-| `CORE_PORT` | no | `8082` | Host port for the core API |
-| `ALLOW_REGISTRATION` | no | `false` | Allow new user sign-ups |
-| `TIMEZONE` | no | `UTC` | App timezone (e.g. `Europe/Brussels`) |
-| `HEALTH_SHOW_DETAILS` | no | `never` | Set to `always` to expose full health details |
-| `LOGGING_STRUCTURED_FORMAT_CONSOLE` | no | — | Set to `logstash`, `ecs`, or `gelf` for structured logs |
+| Variable                            | Required | Default | Description                                             |
+| ----------------------------------- | -------- | ------- | ------------------------------------------------------- |
+| `DB_USERNAME`                       | yes      | —       | PostgreSQL username                                     |
+| `DB_PASSWORD`                       | yes      | —       | PostgreSQL password                                     |
+| `AUTH_PORT`                         | no       | `8081`  | Host port for the auth service                          |
+| `CORE_PORT`                         | no       | `8082`  | Host port for the core API                              |
+| `ALLOW_REGISTRATION`                | no       | `false` | Allow new user sign-ups                                 |
+| `TIMEZONE`                          | no       | `UTC`   | App timezone (e.g. `Europe/Brussels`)                   |
+| `HEALTH_SHOW_DETAILS`               | no       | `never` | Set to `always` to expose full health details           |
+| `LOGGING_STRUCTURED_FORMAT_CONSOLE` | no       | —       | Set to `logstash`, `ecs`, or `gelf` for structured logs |
 
 ## Contributing
 

@@ -3,8 +3,8 @@ name: Publish
 on:
   push:
     tags:
-      - "backend/core-api-v*"
-      - "backend/auth-v*"
+      - 'backend/core-api-v*'
+      - 'backend/auth-v*'
 
 jobs:
   publish-core-api:
