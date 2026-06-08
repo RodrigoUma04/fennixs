@@ -7,6 +7,7 @@
 Please report them privately via [GitHub's private vulnerability reporting](https://github.com/RodrigoUma04/fennixs/security/advisories/new).
 
 Include as much detail as possible:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact

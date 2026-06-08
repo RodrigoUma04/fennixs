@@ -1,3 +1,4 @@
 {
-  "backend/core-api": "0.0.1"
+  "backend/core-api": "0.0.1",
+  "backend/auth": "0.0.1"
 }

@@ -9,7 +9,7 @@ RUN ./mvnw package -DskipTests -B && \
 
 FROM eclipse-temurin:25-jre-alpine
 LABEL org.opencontainers.image.source="https://github.com/rodrigouma04/fennixs"
-LABEL org.opencontainers.image.description="Fennixs core API"
+LABEL org.opencontainers.image.description="Fennixs auth service"
 WORKDIR /app
 RUN addgroup -S spring && adduser -S spring -G spring && \
     apk add --no-cache wget
@@ -18,7 +18,7 @@ COPY --from=builder --chown=spring:spring /app/target/extracted/spring-boot-load
 COPY --from=builder --chown=spring:spring /app/target/extracted/snapshot-dependencies/ ./
 COPY --from=builder --chown=spring:spring /app/target/extracted/application/ ./
 USER spring
-EXPOSE 8082
+EXPOSE 8081
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-    CMD wget -qO- http://localhost:8082/actuator/health || exit 1
+    CMD wget -qO- http://localhost:8081/actuator/health || exit 1
 ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-XX:+ExitOnOutOfMemoryError", "org.springframework.boot.loader.launch.JarLauncher"]

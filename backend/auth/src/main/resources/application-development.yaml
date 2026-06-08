@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/fennixs_core
+    url: jdbc:postgresql://localhost:5432/fennixs_auth
     username: fennixs
     password: ${DB_PASSWORD}
 
@@ -19,6 +19,6 @@ springdoc:
 logging:
   level:
     root: INFO
-    com.fennixs.coreapi: DEBUG
+    com.fennixs.auth: DEBUG
     org.springframework.security: DEBUG
     org.flywaydb: DEBUG

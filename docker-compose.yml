@@ -1,42 +1,76 @@
 services:
-  app:
-    image: ghcr.io/rodrigouma04/fennixs-core-api:latest
-    ports: 
-      - "${BACKEND_PORT:-8080}:8080"
+  auth:
+    image: ghcr.io/rodrigouma04/fennixs-auth:latest
+    ports:
+      - '${AUTH_PORT:-8081}:8081'
     environment:
-      DB_NAME: ${DB_NAME}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       ALLOW_REGISTRATION: ${ALLOW_REGISTRATION:-false}
       TIMEZONE: ${TIMEZONE:-UTC}
+      HEALTH_SHOW_DETAILS: ${HEALTH_SHOW_DETAILS:-never}
       LOGGING_STRUCTURED_FORMAT_CONSOLE: ${LOGGING_STRUCTURED_FORMAT_CONSOLE:-}
+    networks:
+      - services
+      - db
     depends_on:
       database:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s 
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:8081/actuator/health || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  core-api:
+    image: ghcr.io/rodrigouma04/fennixs-core-api:latest
+    ports:
+      - '${CORE_PORT:-8082}:8082'
+    environment:
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      TIMEZONE: ${TIMEZONE:-UTC}
+      HEALTH_SHOW_DETAILS: ${HEALTH_SHOW_DETAILS:-never}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ${LOGGING_STRUCTURED_FORMAT_CONSOLE:-}
+    networks:
+      - services
+      - db
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:8082/actuator/health || exit 1']
+      interval: 30s
       timeout: 5s
       retries: 3
       start_period: 40s
 
   database:
-    container_name: fennixsdb
     image: postgres:18
     environment:
-      POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql
+      - ./docker/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    networks:
+      - db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME}']
       interval: 10s
-      timeout: 5s   
+      timeout: 5s
       retries: 5
       start_period: 10s
+    restart: unless-stopped
 
+networks:
+  services:
+    driver: bridge
+  db:
+    driver: bridge
 
 volumes:
   postgres_data:

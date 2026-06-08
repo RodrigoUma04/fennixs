@@ -3,10 +3,12 @@ name: Publish
 on:
   push:
     tags:
-      - "v*"
+      - 'backend/core-api-v*'
+      - 'backend/auth-v*'
 
 jobs:
-  publish:
+  publish-core-api:
+    if: startsWith(github.ref, 'refs/tags/backend/core-api-v')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,14 +24,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/backend/core-api-v}" >> $GITHUB_OUTPUT
+
       - uses: docker/metadata-action@v5
         id: meta
         with:
-          images: ghcr.io/rodrigouma04/fennixs-core-api
+          images: |
+            ghcr.io/rodrigouma04/fennixs-core-api
+            rodrigouma04/fennixs-core-api
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
+            type=semver,pattern={{version}},value=v${{ steps.version.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=v${{ steps.version.outputs.version }}
+            type=semver,pattern={{major}},value=v${{ steps.version.outputs.version }}
 
       - uses: docker/build-push-action@v6
         with:
@@ -37,5 +50,51 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=core-api
+          cache-to: type=gha,mode=max,scope=core-api
+
+  publish-auth:
+    if: startsWith(github.ref, 'refs/tags/backend/auth-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/backend/auth-v}" >> $GITHUB_OUTPUT
+
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: |
+            ghcr.io/rodrigouma04/fennixs-auth
+            rodrigouma04/fennixs-auth
+          tags: |
+            type=semver,pattern={{version}},value=v${{ steps.version.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=v${{ steps.version.outputs.version }}
+            type=semver,pattern={{major}},value=v${{ steps.version.outputs.version }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: backend/auth
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=auth
+          cache-to: type=gha,mode=max,scope=auth

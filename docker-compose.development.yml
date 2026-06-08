@@ -3,19 +3,25 @@ services:
     container_name: fennixsdb
     image: postgres:18
     environment:
-      POSTGRES_DB: fennixsdb
       POSTGRES_USER: fennixs
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql
+      - ./docker/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    networks:
+      - db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U fennixs -d fennixsdb"]
+      test: ['CMD-SHELL', 'pg_isready -U fennixs']
       interval: 10s
-      timeout: 5s   
+      timeout: 5s
       retries: 5
       start_period: 10s
+
+networks:
+  db:
+    driver: bridge
 
 volumes:
   postgres_data:
