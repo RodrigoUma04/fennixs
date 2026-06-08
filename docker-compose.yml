@@ -15,6 +15,7 @@ services:
     depends_on:
       auth:
         condition: service_healthy
+    restart: unless-stopped
 
   auth:
     image: ghcr.io/rodrigouma04/fennixs-auth:latest
@@ -54,7 +55,7 @@ services:
       LOGGING_STRUCTURED_FORMAT_CONSOLE: ${LOGGING_STRUCTURED_FORMAT_CONSOLE:-}
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.api.rule=PathPrefix(`/api`)'
+      - 'traefik.http.routers.api.rule=PathPrefix(`/api/`)'
       - 'traefik.http.routers.api.entrypoints=web'
       - 'traefik.http.services.api.loadbalancer.server.port=8082'
       - 'traefik.http.routers.api.middlewares=auth-verify@docker'
