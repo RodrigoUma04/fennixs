@@ -33,10 +33,14 @@ A self-hosted personal finance tracker. Track accounts, transactions, budgets, a
    docker compose up -d
    ```
 
-| Service  | Default URL             |
-| -------- | ----------------------- |
-| Auth     | `http://localhost:8081` |
-| Core API | `http://localhost:8082` |
+| Service | Default URL           |
+| ------- | --------------------- |
+| Gateway | `http://localhost:80` |
+
+All requests go through the gateway:
+
+- `/auth/*` — authentication endpoints
+- `/api/*` — core API endpoints
 
 ### Environment variables
 
@@ -44,8 +48,7 @@ A self-hosted personal finance tracker. Track accounts, transactions, budgets, a
 | ----------------------------------- | -------- | ------- | ------------------------------------------------------- |
 | `DB_USERNAME`                       | yes      | —       | PostgreSQL username                                     |
 | `DB_PASSWORD`                       | yes      | —       | PostgreSQL password                                     |
-| `AUTH_PORT`                         | no       | `8081`  | Host port for the auth service                          |
-| `CORE_PORT`                         | no       | `8082`  | Host port for the core API                              |
+| `GATEWAY_PORT`                      | no       | `80`    | Host port for the gateway                               |
 | `ALLOW_REGISTRATION`                | no       | `false` | Allow new user sign-ups                                 |
 | `TIMEZONE`                          | no       | `UTC`   | App timezone (e.g. `Europe/Brussels`)                   |
 | `HEALTH_SHOW_DETAILS`               | no       | `never` | Set to `always` to expose full health details           |
