@@ -6,3 +6,4 @@ entryPoints:
 providers:
   docker:
     exposedByDefault: false
+    network: services
