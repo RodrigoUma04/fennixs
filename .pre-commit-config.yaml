@@ -4,7 +4,6 @@ repos:
     hooks:
       - id: prettier
         types_or: [yaml, json, json5, markdown]
-        exclude: ^backend/
 
   - repo: local
     hooks:

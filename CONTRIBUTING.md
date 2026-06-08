@@ -83,9 +83,4 @@ Formatting is enforced automatically via pre-commit hooks and checked in CI.
 - **Backend** (Java, SQL, YAML under `backend/`) — [Spotless](https://github.com/diffplug/spotless). If you skip the hook, `./mvnw verify` will catch it in CI.
 - **Everything else** (YAML, JSON, Markdown at the repo root) — [Prettier](https://prettier.io). Settings are in `.prettierrc`. CI runs `prettier --check` on PRs.
 
-Install the hooks once after cloning:
-
-```bash
-pip install pre-commit
-pre-commit install
-```
+See step 3 of [Setup](#setup) to install the hooks.
