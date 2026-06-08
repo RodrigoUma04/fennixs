@@ -2,12 +2,13 @@ services:
   auth:
     image: ghcr.io/rodrigouma04/fennixs-auth:latest
     ports:
-      - "${AUTH_PORT:-8081}:8081"
+      - '${AUTH_PORT:-8081}:8081'
     environment:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       ALLOW_REGISTRATION: ${ALLOW_REGISTRATION:-false}
       TIMEZONE: ${TIMEZONE:-UTC}
+      HEALTH_SHOW_DETAILS: ${HEALTH_SHOW_DETAILS:-never}
       LOGGING_STRUCTURED_FORMAT_CONSOLE: ${LOGGING_STRUCTURED_FORMAT_CONSOLE:-}
     networks:
       - services
@@ -17,7 +18,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8081/actuator/health || exit 1"]
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:8081/actuator/health || exit 1']
       interval: 30s
       timeout: 5s
       retries: 3
@@ -26,11 +27,12 @@ services:
   core-api:
     image: ghcr.io/rodrigouma04/fennixs-core-api:latest
     ports:
-      - "${CORE_PORT:-8082}:8082"
+      - '${CORE_PORT:-8082}:8082'
     environment:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       TIMEZONE: ${TIMEZONE:-UTC}
+      HEALTH_SHOW_DETAILS: ${HEALTH_SHOW_DETAILS:-never}
       LOGGING_STRUCTURED_FORMAT_CONSOLE: ${LOGGING_STRUCTURED_FORMAT_CONSOLE:-}
     networks:
       - services
@@ -40,7 +42,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8082/actuator/health || exit 1"]
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:8082/actuator/health || exit 1']
       interval: 30s
       timeout: 5s
       retries: 3
@@ -57,7 +59,7 @@ services:
     networks:
       - db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME}']
       interval: 10s
       timeout: 5s
       retries: 5
