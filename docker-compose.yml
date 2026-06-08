@@ -7,6 +7,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./docker/traefik.yml:/etc/traefik/traefik.yml
+    labels:
+      - 'traefik.http.middlewares.auth-verify.forwardauth.address=http://auth:8081/auth/verify'
+      - 'traefik.http.middlewares.auth-verify.forwardauth.authResponseHeaders=X-User-Id'
     networks:
       - services
     depends_on:
@@ -24,11 +27,9 @@ services:
       LOGGING_STRUCTURED_FORMAT_CONSOLE: ${LOGGING_STRUCTURED_FORMAT_CONSOLE:-}
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.auth.rule=PathPrefix(`/auth`)'
+      - 'traefik.http.routers.auth.rule=PathPrefix(`/auth/`)'
       - 'traefik.http.routers.auth.entrypoints=web'
       - 'traefik.http.services.auth.loadbalancer.server.port=8081'
-      - 'traefik.http.middlewares.auth-verify.forwardauth.address=http://auth:8081/auth/verify'
-      - 'traefik.http.middlewares.auth-verify.forwardauth.authResponseHeaders=X-User-Id'
     networks:
       - services
       - db
