@@ -1,4 +1,4 @@
-package com.rodruma.finance.common.exception;
+package com.fennixs.auth.common.exception;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import com.fennixs.auth.common.exception.BusinessException;
 
 import lombok.extern.slf4j.Slf4j;
 
