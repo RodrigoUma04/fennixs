@@ -10,6 +10,15 @@ spring:
       hibernate:
         format-sql: true
 
+app:
+  security:
+    jwt:
+      secret: dev-secret-key-do-not-use-in-production
+      access-token-expiration-ms: 900000
+    cookie-secure: false
+    cors-allowed-origins:
+      - http://localhost:4200
+
 springdoc:
   api-docs:
     enabled: true
