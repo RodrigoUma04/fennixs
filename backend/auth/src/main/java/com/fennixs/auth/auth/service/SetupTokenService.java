@@ -37,18 +37,23 @@ public class SetupTokenService {
         }
     }
 
-    public boolean isValid(String token) {
+    public boolean tryConsume(String token) {
         if (appProperties.registration().allow()) return true;
 
         String current = setupToken.get();
         if (current == null || !StringUtils.hasText(token)) return false;
 
-        return MessageDigest.isEqual(current.getBytes(StandardCharsets.UTF_8), token.getBytes(StandardCharsets.UTF_8));
+        if (!MessageDigest.isEqual(current.getBytes(StandardCharsets.UTF_8), token.getBytes(StandardCharsets.UTF_8)))
+            return false;
+
+        return setupToken.compareAndSet(current, null);
     }
 
-    public void consume() {
-        if (setupToken.getAndSet(null) != null) {
-            log.info("Setup token consumed");
+    public void restore(String token) {
+        if (appProperties.registration().allow() || !StringUtils.hasText(token)) return;
+
+        if (setupToken.compareAndSet(null, token)) {
+            log.info("Setup token restored after failed registration");
         }
     }
 }

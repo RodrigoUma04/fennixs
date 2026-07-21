@@ -1,10 +1,14 @@
 package com.fennixs.auth.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.when;
 
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -58,119 +62,148 @@ class SetupTokenUnitTest {
     }
     // endregion
 
-    // region isValid()
-    @Test
-    void givenGeneratedToken_whenIsValidWithSameToken_thenReturnTrue() {
-        // Arrange
-        when(userRepository.count()).thenReturn(0L);
-
-        // Act
-        ReflectionTestUtils.invokeMethod(service, "init");
-
-        // Assert
-        assertThat(service.isValid(tokenValue(service))).isTrue();
-    }
-
+    // region tryConsume()
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"any-token", "12345678", "11.23,5423/7*348"})
-    void givenRegistrationAllowed_whenIsValid_thenReturnTrueRegardlessOfToken(String token) {
+    void givenRegistrationAllowed_whenTryConsume_thenReturnTrueRegardlessOfToken(String token) {
         // Arrange
         service = serviceWith(true);
 
         // Assert
-        assertThat(service.isValid(token)).isTrue();
+        assertThat(service.tryConsume(token)).isTrue();
     }
 
     @Test
-    void givenGeneratedToken_whenIsValidWithDifferentToken_thenReturnFalse() {
+    void givenGeneratedToken_whenTryConsumeWithSameToken_thenReturnTrueAndTokenIsClaimed() {
         // Arrange
-        when(userRepository.count()).thenReturn(0L);
+        String token = initWithGeneratedToken();
 
         // Act
-        ReflectionTestUtils.invokeMethod(service, "init");
+        boolean result = service.tryConsume(token);
 
         // Assert
-        assertThat(service.isValid("not-the-generated-token")).isFalse();
+        assertThat(result).isTrue();
+        assertThat(tokenValue(service)).isNull();
+    }
+
+    @Test
+    void givenGeneratedToken_whenTryConsumeTwice_thenSecondAttemptReturnsFalse() {
+        // Arrange
+        String token = initWithGeneratedToken();
+
+        // Act
+        boolean first = service.tryConsume(token);
+        boolean second = service.tryConsume(token);
+
+        // Assert
+        assertThat(first).isTrue();
+        assertThat(second).isFalse();
+    }
+
+    @Test
+    void givenGeneratedToken_whenTryConsumeWithDifferentToken_thenReturnFalseAndTokenKept() {
+        // Arrange
+        String token = initWithGeneratedToken();
+
+        // Act
+        boolean result = service.tryConsume("not-the-generated-token");
+
+        // Assert
+        assertThat(result).isFalse();
+        assertThat(tokenValue(service)).isEqualTo(token);
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {" ", "\t"})
-    void givenRegistrationNotAllowedAndBlankToken_whenIsValid_thenReturnFalse(String token) {
+    void givenRegistrationNotAllowedAndBlankToken_whenTryConsume_thenReturnFalse(String token) {
         // Arrange
-        when(userRepository.count()).thenReturn(0L);
-
-        // Act
-        ReflectionTestUtils.invokeMethod(service, "init");
+        initWithGeneratedToken();
 
         // Assert
-        assertThat(service.isValid(token)).isFalse();
+        assertThat(service.tryConsume(token)).isFalse();
     }
 
     @Test
-    void givenUsersAlreadyExist_whenIsValid_thenReturnFalse() {
+    void givenUsersAlreadyExist_whenTryConsume_thenReturnFalse() {
         // Arrange
         when(userRepository.count()).thenReturn(5L);
-
-        // Act
         ReflectionTestUtils.invokeMethod(service, "init");
 
         // Assert
-        assertThat(service.isValid("any-token")).isFalse();
+        assertThat(service.tryConsume("any-token")).isFalse();
     }
 
     @Test
-    void givenTokenAlreadyConsumed_whenIsValid_thenReturnFalseEvenForPreviouslyValidToken() {
+    void givenGeneratedToken_whenManyThreadsRaceToConsume_thenExactlyOneSucceeds() throws InterruptedException {
         // Arrange
-        when(userRepository.count()).thenReturn(0L);
-        ReflectionTestUtils.invokeMethod(service, "init");
-        String token = tokenValue(service);
+        String token = initWithGeneratedToken();
+        int contenders = 64;
+        CountDownLatch ready = new CountDownLatch(1);
+        CountDownLatch finished = new CountDownLatch(contenders);
+        AtomicInteger successes = new AtomicInteger();
+        ExecutorService pool = Executors.newFixedThreadPool(contenders);
 
-        // Act
-        service.consume();
+        // Act: release all threads at once so they genuinely contend on the same token
+        for (int i = 0; i < contenders; i++) {
+            pool.execute(() -> {
+                try {
+                    ready.await();
+                    if (service.tryConsume(token)) {
+                        successes.incrementAndGet();
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    finished.countDown();
+                }
+            });
+        }
+        ready.countDown();
+        boolean completed = finished.await(10, TimeUnit.SECONDS);
+        pool.shutdownNow();
 
         // Assert
+        assertThat(completed).isTrue();
+        assertThat(successes.get()).isEqualTo(1);
         assertThat(tokenValue(service)).isNull();
-        assertThat(service.isValid(token)).isFalse();
     }
     // endregion
 
-    // region consume()
+    // region restore()
     @Test
-    void givenGeneratedToken_whenConsume_thenTokenIsCleared() {
+    void givenClaimedToken_whenRestore_thenTokenIsConsumableAgain() {
         // Arrange
-        when(userRepository.count()).thenReturn(0L);
-        ReflectionTestUtils.invokeMethod(service, "init");
+        String token = initWithGeneratedToken();
+        service.tryConsume(token);
 
         // Act
-        service.consume();
+        service.restore(token);
 
         // Assert
-        assertThat(tokenValue(service)).isNull();
+        assertThat(tokenValue(service)).isEqualTo(token);
+        assertThat(service.tryConsume(token)).isTrue();
     }
 
     @Test
-    void givenNoToken_whenConsume_thenRemainsNullAndDoesNotThrow() {
-        // Act / Assert
-        assertThatCode(() -> service.consume()).doesNotThrowAnyException();
-        assertThat(tokenValue(service)).isNull();
-    }
-
-    @Test
-    void givenAlreadyConsumed_whenConsumeAgain_thenRemainsNull() {
+    void givenRegistrationAllowed_whenRestore_thenNoTokenIsSet() {
         // Arrange
-        when(userRepository.count()).thenReturn(0L);
-        ReflectionTestUtils.invokeMethod(service, "init");
-        service.consume();
+        service = serviceWith(true);
 
         // Act
-        service.consume();
+        service.restore("bogus-token");
 
         // Assert
         assertThat(tokenValue(service)).isNull();
     }
     // endregion
+
+    private String initWithGeneratedToken() {
+        when(userRepository.count()).thenReturn(0L);
+        ReflectionTestUtils.invokeMethod(service, "init");
+        return tokenValue(service);
+    }
 
     private static String tokenValue(SetupTokenService svc) {
         return (String)
