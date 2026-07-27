@@ -62,3 +62,9 @@ app:
   timezone: ${TIMEZONE:UTC}
   registration:
     allow: ${ALLOW_REGISTRATION:false}
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      access-token-expiration-ms: 900000
+    cookie-secure: ${COOKIE_SECURE:false}
+    cors-allowed-origins: []

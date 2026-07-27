@@ -34,6 +34,7 @@
         <palantir-format.version>2.90.0</palantir-format.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <jjwt.version>0.13.0</jjwt.version>
+        <bouncycastle.version>1.84</bouncycastle.version>
     </properties>
     <dependencies>
         <dependency>
@@ -149,6 +150,11 @@
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>${bouncycastle.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -245,6 +251,11 @@
                                 <typeMapping>date-time=java.time.Instant</typeMapping>
                                 <typeMapping>uuid=java.util.UUID</typeMapping>
                             </typeMappings>
+                            <schemaMappings>
+                                <schemaMapping>RegisterRequestDto=com.fennixs.auth.auth.dto.RegisterRequestDto</schemaMapping>
+                                <schemaMapping>ProblemDetail=org.springframework.http.ProblemDetail</schemaMapping>
+                                <schemaMapping>ValidationProblemDetail=org.springframework.http.ProblemDetail</schemaMapping>
+                            </schemaMappings>
                             <importMappings>
                                 <importMapping>decimal=java.math.BigDecimal</importMapping>
                                 <importMapping>date=java.time.LocalDate</importMapping>

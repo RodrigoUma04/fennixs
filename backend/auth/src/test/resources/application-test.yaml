@@ -1,0 +1,6 @@
+app:
+  registration:
+    allow: false
+  security:
+    jwt:
+      secret: test-only-jwt-secret-not-used-for-anything-real
