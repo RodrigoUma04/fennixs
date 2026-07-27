@@ -24,7 +24,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
         '409':
-          description: Email already in use
+          description: A resource with the provided data already exists
           content:
             application/problem+json:
               schema:

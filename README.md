@@ -32,9 +32,18 @@ A self-hosted personal finance tracker. Track accounts, transactions, budgets, a
    Generate a strong `JWT_SECRET`, for example with `openssl rand -base64 48`.
 
 3. Start the stack:
+
    ```bash
    docker compose up -d
    ```
+
+4. Create the owner account. On first start with an empty database, the auth service prints a one-time **setup token** to its logs. Retrieve it:
+
+   ```bash
+   docker compose logs auth | grep "Setup token"
+   ```
+
+   Then register the first user through the app, entering this token when prompted. That first account becomes the instance owner. The token is single-use, and registration stays closed afterward unless you set `ALLOW_REGISTRATION=true`.
 
 | Service | Default URL           |
 | ------- | --------------------- |
