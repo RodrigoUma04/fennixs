@@ -29,6 +29,7 @@ import com.fennixs.auth.TestcontainersConfiguration;
 import com.fennixs.auth.auth.dto.RegisterRequestDto;
 import com.fennixs.auth.auth.service.SetupTokenService;
 import com.fennixs.auth.auth.util.RegisterRequestDtoObjectMother;
+import com.fennixs.auth.user.entity.Role;
 import com.fennixs.auth.user.entity.User;
 import com.fennixs.auth.user.repository.UserRepository;
 
@@ -73,6 +74,7 @@ class AuthControllerIntegrationTest {
 
         assertThat(tokenRef(setupTokenService).get()).isNull();
         assertThat(userRepository.count()).isEqualTo(1);
+        assertThat(userRepository.findByEmail(EMAIL).orElseThrow().getRole()).isEqualTo(Role.OWNER);
     }
 
     @Test
@@ -172,6 +174,7 @@ class AuthControllerIntegrationTest {
         User user = User.builder()
                 .email(email)
                 .passwordHash(passwordEncoder.encode(rawPassword))
+                .role(Role.USER)
                 .build();
         userRepository.save(user);
     }

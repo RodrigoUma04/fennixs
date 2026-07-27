@@ -19,9 +19,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fennixs.auth.auth.dto.RegisterRequestDto;
+import com.fennixs.auth.auth.service.SetupTokenService.Grant;
 import com.fennixs.auth.auth.util.RegisterRequestDtoObjectMother;
 import com.fennixs.auth.common.exception.AuthException;
 import com.fennixs.auth.common.exception.BusinessException;
+import com.fennixs.auth.user.entity.Role;
 import com.fennixs.auth.user.entity.User;
 import com.fennixs.auth.user.repository.UserRepository;
 
@@ -46,9 +48,9 @@ class AuthServiceUnitTest {
 
     // region register()
     @Test
-    void givenValidRequest_whenRegister_thenUserIsSavedWithEncodedPassword() {
+    void givenSetupTokenGrant_whenRegister_thenUserIsSavedWithEncodedPasswordAndOwnerRole() {
         // Arrange
-        when(setupTokenService.tryConsume(TOKEN)).thenReturn(true);
+        when(setupTokenService.consume(TOKEN)).thenReturn(Grant.SETUP_TOKEN);
         when(userRepository.existsByEmail(EMAIL)).thenReturn(false);
         when(passwordEncoder.encode(PASSWORD)).thenReturn(HASH);
         RegisterRequestDto request = RegisterRequestDtoObjectMother.valid();
@@ -62,13 +64,31 @@ class AuthServiceUnitTest {
         User saved = captor.getValue();
         assertThat(saved.getEmail()).isEqualTo(EMAIL);
         assertThat(saved).extracting("passwordHash").isEqualTo(HASH);
+        assertThat(saved.getRole()).isEqualTo(Role.OWNER);
         verify(setupTokenService, never()).restore(anyString());
+    }
+
+    @Test
+    void givenOpenRegistrationGrant_whenRegister_thenUserGetsUserRole() {
+        // Arrange
+        when(setupTokenService.consume(TOKEN)).thenReturn(Grant.OPEN_REGISTRATION);
+        when(userRepository.existsByEmail(EMAIL)).thenReturn(false);
+        when(passwordEncoder.encode(PASSWORD)).thenReturn(HASH);
+        RegisterRequestDto request = RegisterRequestDtoObjectMother.valid();
+
+        // Act
+        authService.register(request);
+
+        // Assert
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).saveAndFlush(captor.capture());
+        assertThat(captor.getValue().getRole()).isEqualTo(Role.USER);
     }
 
     @Test
     void givenEmailWithMixedCaseAndWhitespace_whenRegister_thenEmailIsNormalizedForCheckAndSave() {
         // Arrange
-        when(setupTokenService.tryConsume(TOKEN)).thenReturn(true);
+        when(setupTokenService.consume(TOKEN)).thenReturn(Grant.SETUP_TOKEN);
         when(userRepository.existsByEmail(EMAIL)).thenReturn(false);
         when(passwordEncoder.encode(PASSWORD)).thenReturn(HASH);
         RegisterRequestDto request =
@@ -85,9 +105,9 @@ class AuthServiceUnitTest {
     }
 
     @Test
-    void givenInvalidSetupToken_whenRegister_thenThrowForbiddenAndNothingPersisted() {
+    void givenDeniedGrant_whenRegister_thenThrowForbiddenAndNothingPersisted() {
         // Arrange
-        when(setupTokenService.tryConsume(TOKEN)).thenReturn(false);
+        when(setupTokenService.consume(TOKEN)).thenReturn(Grant.DENIED);
         RegisterRequestDto request = RegisterRequestDtoObjectMother.valid();
 
         // Act & Assert
@@ -103,7 +123,7 @@ class AuthServiceUnitTest {
     @Test
     void givenDuplicateEmail_whenRegister_thenThrowConflictAndTokenIsRestored() {
         // Arrange
-        when(setupTokenService.tryConsume(TOKEN)).thenReturn(true);
+        when(setupTokenService.consume(TOKEN)).thenReturn(Grant.SETUP_TOKEN);
         when(userRepository.existsByEmail(EMAIL)).thenReturn(true);
         RegisterRequestDto request = RegisterRequestDtoObjectMother.valid();
 
@@ -120,7 +140,7 @@ class AuthServiceUnitTest {
     @Test
     void givenSaveFails_whenRegister_thenPropagateExceptionAndTokenIsRestored() {
         // Arrange
-        when(setupTokenService.tryConsume(TOKEN)).thenReturn(true);
+        when(setupTokenService.consume(TOKEN)).thenReturn(Grant.SETUP_TOKEN);
         when(userRepository.existsByEmail(EMAIL)).thenReturn(false);
         when(passwordEncoder.encode(PASSWORD)).thenReturn(HASH);
         when(userRepository.saveAndFlush(any(User.class)))

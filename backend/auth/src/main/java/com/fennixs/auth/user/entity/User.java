@@ -4,6 +4,8 @@ import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
 import org.hibernate.annotations.SQLRestriction;
@@ -30,6 +32,11 @@ public class User extends BaseEntity {
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
+
+    @Getter
+    @Column(name = "role", nullable = false, length = 32)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(name = "deleted_at")
     private Instant deletedAt;

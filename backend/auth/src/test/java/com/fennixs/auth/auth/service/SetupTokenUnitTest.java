@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.fennixs.auth.auth.service.SetupTokenService.Grant;
 import com.fennixs.auth.config.AppProperties;
 import com.fennixs.auth.user.repository.UserRepository;
 
@@ -62,87 +63,87 @@ class SetupTokenUnitTest {
     }
     // endregion
 
-    // region tryConsume()
+    // region consume()
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"any-token", "12345678", "11.23,5423/7*348"})
-    void givenRegistrationAllowed_whenTryConsume_thenReturnTrueRegardlessOfToken(String token) {
+    void givenRegistrationAllowed_whenConsume_thenReturnOpenRegistrationRegardlessOfToken(String token) {
         // Arrange
         service = serviceWith(true);
 
         // Assert
-        assertThat(service.tryConsume(token)).isTrue();
+        assertThat(service.consume(token)).isEqualTo(Grant.OPEN_REGISTRATION);
     }
 
     @Test
-    void givenGeneratedToken_whenTryConsumeWithSameToken_thenReturnTrueAndTokenIsClaimed() {
+    void givenGeneratedToken_whenConsumeWithSameToken_thenReturnSetupTokenAndTokenIsClaimed() {
         // Arrange
         String token = initWithGeneratedToken();
 
         // Act
-        boolean result = service.tryConsume(token);
+        Grant result = service.consume(token);
 
         // Assert
-        assertThat(result).isTrue();
+        assertThat(result).isEqualTo(Grant.SETUP_TOKEN);
         assertThat(tokenValue(service)).isNull();
     }
 
     @Test
-    void givenGeneratedToken_whenTryConsumeTwice_thenSecondAttemptReturnsFalse() {
+    void givenGeneratedToken_whenConsumeTwice_thenSecondAttemptIsDenied() {
         // Arrange
         String token = initWithGeneratedToken();
 
         // Act
-        boolean first = service.tryConsume(token);
-        boolean second = service.tryConsume(token);
+        Grant first = service.consume(token);
+        Grant second = service.consume(token);
 
         // Assert
-        assertThat(first).isTrue();
-        assertThat(second).isFalse();
+        assertThat(first).isEqualTo(Grant.SETUP_TOKEN);
+        assertThat(second).isEqualTo(Grant.DENIED);
     }
 
     @Test
-    void givenGeneratedToken_whenTryConsumeWithDifferentToken_thenReturnFalseAndTokenKept() {
+    void givenGeneratedToken_whenConsumeWithDifferentToken_thenReturnDeniedAndTokenKept() {
         // Arrange
         String token = initWithGeneratedToken();
 
         // Act
-        boolean result = service.tryConsume("not-the-generated-token");
+        Grant result = service.consume("not-the-generated-token");
 
         // Assert
-        assertThat(result).isFalse();
+        assertThat(result).isEqualTo(Grant.DENIED);
         assertThat(tokenValue(service)).isEqualTo(token);
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {" ", "\t"})
-    void givenRegistrationNotAllowedAndBlankToken_whenTryConsume_thenReturnFalse(String token) {
+    void givenRegistrationNotAllowedAndBlankToken_whenConsume_thenReturnDenied(String token) {
         // Arrange
         initWithGeneratedToken();
 
         // Assert
-        assertThat(service.tryConsume(token)).isFalse();
+        assertThat(service.consume(token)).isEqualTo(Grant.DENIED);
     }
 
     @Test
-    void givenUsersAlreadyExist_whenTryConsume_thenReturnFalse() {
+    void givenUsersAlreadyExist_whenConsume_thenReturnDenied() {
         // Arrange
         when(userRepository.count()).thenReturn(5L);
         ReflectionTestUtils.invokeMethod(service, "init");
 
         // Assert
-        assertThat(service.tryConsume("any-token")).isFalse();
+        assertThat(service.consume("any-token")).isEqualTo(Grant.DENIED);
     }
 
     @Test
-    void givenGeneratedToken_whenManyThreadsRaceToConsume_thenExactlyOneSucceeds() throws InterruptedException {
+    void givenGeneratedToken_whenManyThreadsRaceToConsume_thenExactlyOneWins() throws InterruptedException {
         // Arrange
         String token = initWithGeneratedToken();
         int contenders = 64;
         CountDownLatch ready = new CountDownLatch(1);
         CountDownLatch finished = new CountDownLatch(contenders);
-        AtomicInteger successes = new AtomicInteger();
+        AtomicInteger grantedSetupToken = new AtomicInteger();
         ExecutorService pool = Executors.newFixedThreadPool(contenders);
 
         // Act: release all threads at once so they genuinely contend on the same token
@@ -150,8 +151,8 @@ class SetupTokenUnitTest {
             pool.execute(() -> {
                 try {
                     ready.await();
-                    if (service.tryConsume(token)) {
-                        successes.incrementAndGet();
+                    if (service.consume(token) == Grant.SETUP_TOKEN) {
+                        grantedSetupToken.incrementAndGet();
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -166,7 +167,7 @@ class SetupTokenUnitTest {
 
         // Assert
         assertThat(completed).isTrue();
-        assertThat(successes.get()).isEqualTo(1);
+        assertThat(grantedSetupToken.get()).isEqualTo(1);
         assertThat(tokenValue(service)).isNull();
     }
     // endregion
@@ -176,14 +177,14 @@ class SetupTokenUnitTest {
     void givenClaimedToken_whenRestore_thenTokenIsConsumableAgain() {
         // Arrange
         String token = initWithGeneratedToken();
-        service.tryConsume(token);
+        service.consume(token);
 
         // Act
         service.restore(token);
 
         // Assert
         assertThat(tokenValue(service)).isEqualTo(token);
-        assertThat(service.tryConsume(token)).isTrue();
+        assertThat(service.consume(token)).isEqualTo(Grant.SETUP_TOKEN);
     }
 
     @Test

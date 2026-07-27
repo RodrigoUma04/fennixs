@@ -37,16 +37,22 @@ public class SetupTokenService {
         }
     }
 
-    public boolean tryConsume(String token) {
-        if (appProperties.registration().allow()) return true;
+    public enum Grant {
+        DENIED,
+        OPEN_REGISTRATION,
+        SETUP_TOKEN
+    }
+
+    public Grant consume(String token) {
+        if (appProperties.registration().allow()) return Grant.OPEN_REGISTRATION;
 
         String current = setupToken.get();
-        if (current == null || !StringUtils.hasText(token)) return false;
+        if (current == null || !StringUtils.hasText(token)) return Grant.DENIED;
 
         if (!MessageDigest.isEqual(current.getBytes(StandardCharsets.UTF_8), token.getBytes(StandardCharsets.UTF_8)))
-            return false;
+            return Grant.DENIED;
 
-        return setupToken.compareAndSet(current, null);
+        return setupToken.compareAndSet(current, null) ? Grant.SETUP_TOKEN : Grant.DENIED;
     }
 
     public void restore(String token) {
