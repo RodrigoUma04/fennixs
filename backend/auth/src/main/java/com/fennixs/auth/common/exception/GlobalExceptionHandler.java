@@ -33,7 +33,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ProblemDetail> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         log.warn("Data integrity violation", ex);
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.CONFLICT, "A resource with the provided data already exists.");
+                HttpStatus.CONFLICT, "A resource with the provided data already exists");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(problem);
     }
 

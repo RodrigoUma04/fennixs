@@ -53,7 +53,7 @@ class AuthControllerExceptionHandlingIntegrationTest {
         // Act & Assert
         performRegister()
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.detail").value("A resource with the provided data already exists."));
+                .andExpect(jsonPath("$.detail").value("A resource with the provided data already exists"));
     }
 
     private ResultActions performRegister() throws Exception {
