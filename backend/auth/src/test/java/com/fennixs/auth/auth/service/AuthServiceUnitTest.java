@@ -66,6 +66,25 @@ class AuthServiceUnitTest {
     }
 
     @Test
+    void givenEmailWithMixedCaseAndWhitespace_whenRegister_thenEmailIsNormalizedForCheckAndSave() {
+        // Arrange
+        when(setupTokenService.tryConsume(TOKEN)).thenReturn(true);
+        when(userRepository.existsByEmail(EMAIL)).thenReturn(false);
+        when(passwordEncoder.encode(PASSWORD)).thenReturn(HASH);
+        RegisterRequestDto request =
+                RegisterRequestDtoObjectMother.createRegisterRequestDto(TOKEN, "  User@Fennixs.COM  ", PASSWORD);
+
+        // Act
+        authService.register(request);
+
+        // Assert
+        verify(userRepository).existsByEmail(EMAIL);
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).saveAndFlush(captor.capture());
+        assertThat(captor.getValue().getEmail()).isEqualTo(EMAIL);
+    }
+
+    @Test
     void givenInvalidSetupToken_whenRegister_thenThrowForbiddenAndNothingPersisted() {
         // Arrange
         when(setupTokenService.tryConsume(TOKEN)).thenReturn(false);
@@ -91,7 +110,7 @@ class AuthServiceUnitTest {
         // Act & Assert
         assertThatThrownBy(() -> authService.register(request))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage("An account with this email already exists")
+                .hasMessage("A resource with the provided data already exists")
                 .satisfies(
                         ex -> assertThat(((BusinessException) ex).getStatus()).isEqualTo(HttpStatus.CONFLICT));
         verify(userRepository, never()).saveAndFlush(any());

@@ -99,7 +99,7 @@ class AuthControllerIntegrationTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {"notanemail", "no-at-sign"})
+    @ValueSource(strings = {"notanemail", "no-at-sign", "  invalid@mail.com  "})
     void givenInvalidEmail_whenRegister_thenReturnUnprocessableContent(String invalidEmail) throws Exception {
         // Act & Assert
         performRegister(RegisterRequestDtoObjectMother.createRegisterRequestDto(setupToken, invalidEmail, PASSWORD))
@@ -136,10 +136,28 @@ class AuthControllerIntegrationTest {
         performRegister(RegisterRequestDtoObjectMother.createRegisterRequestDto(
                         setupToken, EMAIL, "anotherpassword123"))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.detail").value("An account with this email already exists"));
+                .andExpect(jsonPath("$.detail").value("A resource with the provided data already exists"));
 
         assertThat(userRepository.count()).isEqualTo(1);
         assertThat(tokenRef(setupTokenService).get()).isEqualTo(setupToken);
+    }
+
+    @Test
+    void givenEmailRegistered_whenRegisterSameEmailWithDifferentCasing_thenReturnConflict() throws Exception {
+        // Arrange
+        performRegister(RegisterRequestDtoObjectMother.createRegisterRequestDto(
+                        setupToken, "User@Fennixs.COM", PASSWORD))
+                .andExpect(status().isCreated());
+
+        tokenRef(setupTokenService).set(setupToken);
+
+        // Act & Assert
+        performRegister(RegisterRequestDtoObjectMother.createRegisterRequestDto(
+                        setupToken, "USER@FENNIXS.COM", "anotherpassword123"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.detail").value("A resource with the provided data already exists"));
+
+        assertThat(userRepository.count()).isEqualTo(1);
     }
     // endregion
 
