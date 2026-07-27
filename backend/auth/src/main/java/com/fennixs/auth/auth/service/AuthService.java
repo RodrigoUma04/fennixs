@@ -28,8 +28,8 @@ public class AuthService {
             throw new AuthException("Invalid or missing setup token", HttpStatus.FORBIDDEN);
 
         try {
-            if (userRepository.existsByEmail(request.email()))
-                throw new BusinessException("An account with this email already exists", HttpStatus.CONFLICT);
+            if (userRepository.existsByEmail(request.email().toLowerCase().trim()))
+                throw new BusinessException("A resource with the provided data already exists", HttpStatus.CONFLICT);
 
             User user = User.builder()
                     .email(request.email())
