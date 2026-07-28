@@ -1,10 +1,16 @@
 {
+  "include-component-in-tag": true,
+  "separate-pull-requests": true,
   "packages": {
-    "backend/core-api": {
-      "release-type": "maven"
-    },
     "backend/auth": {
-      "release-type": "maven"
+      "release-type": "maven",
+      "component": "backend/auth",
+      "skip-snapshot": true
+    },
+    "backend/core-api": {
+      "release-type": "maven",
+      "component": "backend/core-api",
+      "skip-snapshot": true
     }
   }
 }
