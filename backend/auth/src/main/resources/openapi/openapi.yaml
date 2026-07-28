@@ -16,7 +16,16 @@ paths:
               $ref: '#/components/schemas/RegisterRequestDto'
       responses:
         '201':
-          description: User registered successfully
+          description: User registered successfully. Sets access_token and refresh_token cookies.
+          headers:
+            Set-Cookie:
+              description: |
+                Two cookies are set:
+                - access_token: JWT; HttpOnly; Secure; SameSite=Strict; Path=/api/
+                - refresh_token: opaque token; HttpOnly; Secure; SameSite=Strict; Path=/api/auth/
+              schema:
+                type: string
+                example: "access_token=<jwt>; HttpOnly; Secure; SameSite=Strict; Path=/api/"
         '403':
           description: Invalid or missing setup token
           content:
@@ -25,6 +34,42 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
         '409':
           description: A resource with the provided data already exists
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: Validation error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+      responses:
+        '200':
+          description: Login successful. Sets access_token and refresh_token cookies.
+          headers:
+            Set-Cookie:
+              description: |
+                Two cookies are set:
+                - access_token: JWT; HttpOnly; Secure; SameSite=Strict; Path=/api/
+                - refresh_token: opaque token; HttpOnly; Secure; SameSite=Strict; Path=/api/auth/
+              schema:
+                type: string
+                example: "access_token=<jwt>; HttpOnly; Secure; SameSite=Strict; Path=/api/"
+        '401':
+          description: Invalid credentials
           content:
             application/problem+json:
               schema:
@@ -53,6 +98,7 @@ components:
         instance:
           type: string
           format: uri
+
     ValidationProblemDetail:
       allOf:
         - $ref: '#/components/schemas/ProblemDetail'
@@ -63,6 +109,7 @@ components:
               additionalProperties:
                 type: string
               description: Map of field name to validation error message
+
     RegisterRequestDto:
       type: object
       required:
@@ -78,3 +125,15 @@ components:
           type: string
           minLength: 12
           maxLength: 128
+
+    LoginRequestDto:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
