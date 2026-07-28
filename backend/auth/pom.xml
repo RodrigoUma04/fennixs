@@ -252,6 +252,7 @@
                             </typeMappings>
                             <schemaMappings>
                                 <schemaMapping>RegisterRequestDto=com.fennixs.auth.auth.dto.RegisterRequestDto</schemaMapping>
+                                <schemaMapping>LoginRequestDto=com.fennixs.auth.auth.dto.LoginRequestDto</schemaMapping>
                                 <schemaMapping>ProblemDetail=org.springframework.http.ProblemDetail</schemaMapping>
                                 <schemaMapping>ValidationProblemDetail=org.springframework.http.ProblemDetail</schemaMapping>
                             </schemaMappings>
