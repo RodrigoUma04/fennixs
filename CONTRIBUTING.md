@@ -11,11 +11,13 @@
 
 1. Copy `.env.development.example` to `.env` and set `DB_PASSWORD`.
 
-2. Start the database:
+2. Start the database and gateway:
 
    ```bash
    docker compose -f docker-compose.development.yml up -d
    ```
+
+   This runs PostgreSQL and Traefik. The services themselves run from your IDE, and Traefik routes to them on the host, so requests through `http://localhost` behave the same as in production, including the ForwardAuth check on `/api/*`.
 
 3. Install the pre-commit hook (requires `pip`):
    ```bash
