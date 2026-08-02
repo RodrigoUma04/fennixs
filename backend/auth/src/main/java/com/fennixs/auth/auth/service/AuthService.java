@@ -80,20 +80,24 @@ public class AuthService {
                 .findByTokenHash(hash)
                 .orElseThrow(() -> new AuthException("Invalid refresh token", HttpStatus.UNAUTHORIZED));
 
-        if (stored.getExpiresAt().isBefore(Instant.now())) {
-            refreshTokenRepository.delete(stored);
+        User user = stored.getUser();
+        Instant expiresAt = stored.getExpiresAt();
+
+        if (refreshTokenRepository.deleteByTokenHash(hash) != 1) {
+            throw new AuthException("Invalid refresh token", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (expiresAt.isBefore(Instant.now())) {
             throw new AuthException("Refresh token expired", HttpStatus.UNAUTHORIZED);
         }
 
-        refreshTokenRepository.delete(stored);
-        User user = stored.getUser();
         return issueTokens(user);
     }
 
     @Transactional
     public void logout(String rawToken) {
         if (rawToken == null) return;
-        refreshTokenRepository.findByTokenHash(sha256(rawToken)).ifPresent(refreshTokenRepository::delete);
+        refreshTokenRepository.deleteByTokenHash(sha256(rawToken));
     }
 
     // region Helper methods

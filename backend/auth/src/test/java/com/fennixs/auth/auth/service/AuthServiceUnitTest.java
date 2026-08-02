@@ -276,6 +276,7 @@ class AuthServiceUnitTest {
                 .expiresAt(Instant.now().plus(1, ChronoUnit.DAYS))
                 .build();
         when(refreshTokenRepository.findByTokenHash(sha256(rawToken))).thenReturn(Optional.of(stored));
+        when(refreshTokenRepository.deleteByTokenHash(sha256(rawToken))).thenReturn(1);
         when(jwtService.generateAccessToken(any(AuthPrincipal.class))).thenReturn(ACCESS_TOKEN);
 
         // Act
@@ -284,8 +285,31 @@ class AuthServiceUnitTest {
         // Assert
         assertThat(tokens.accessToken()).isEqualTo(ACCESS_TOKEN);
         assertThat(tokens.refreshToken()).isNotEqualTo(rawToken);
-        verify(refreshTokenRepository).delete(stored);
+        verify(refreshTokenRepository).deleteByTokenHash(sha256(rawToken));
         verify(refreshTokenRepository).save(any(RefreshToken.class));
+    }
+
+    @Test
+    void givenTokenClaimedByConcurrentRefresh_whenRefresh_thenThrowUnauthorizedAndIssueNoTokens() {
+        // Arrange
+        String rawToken = "raw-refresh-token";
+        User user =
+                User.builder().email(EMAIL).passwordHash(HASH).role(Role.USER).build();
+        RefreshToken stored = RefreshToken.builder()
+                .user(user)
+                .tokenHash(sha256(rawToken))
+                .expiresAt(Instant.now().plus(1, ChronoUnit.DAYS))
+                .build();
+        when(refreshTokenRepository.findByTokenHash(sha256(rawToken))).thenReturn(Optional.of(stored));
+        when(refreshTokenRepository.deleteByTokenHash(sha256(rawToken))).thenReturn(0);
+
+        // Act & Assert
+        assertThatThrownBy(() -> authService.refresh(rawToken))
+                .isInstanceOf(AuthException.class)
+                .hasMessage("Invalid refresh token")
+                .satisfies(ex -> assertThat(((AuthException) ex).getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED));
+        verify(refreshTokenRepository, never()).save(any());
+        verify(jwtService, never()).generateAccessToken(any());
     }
 
     @Test
@@ -300,13 +324,14 @@ class AuthServiceUnitTest {
                 .expiresAt(Instant.now().minus(1, ChronoUnit.SECONDS))
                 .build();
         when(refreshTokenRepository.findByTokenHash(sha256(rawToken))).thenReturn(Optional.of(expired));
+        when(refreshTokenRepository.deleteByTokenHash(sha256(rawToken))).thenReturn(1);
 
         // Act & Assert
         assertThatThrownBy(() -> authService.refresh(rawToken))
                 .isInstanceOf(AuthException.class)
                 .hasMessage("Refresh token expired")
                 .satisfies(ex -> assertThat(((AuthException) ex).getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED));
-        verify(refreshTokenRepository).delete(expired);
+        verify(refreshTokenRepository).deleteByTokenHash(sha256(rawToken));
         verify(refreshTokenRepository, never()).save(any());
         verify(jwtService, never()).generateAccessToken(any());
     }
@@ -339,34 +364,29 @@ class AuthServiceUnitTest {
     void givenValidRefreshToken_whenLogout_thenDeleteIt() {
         // Arrange
         String rawToken = "raw-refresh-token";
-        RefreshToken stored = RefreshToken.builder()
-                .tokenHash(sha256(rawToken))
-                .expiresAt(Instant.now().plus(1, ChronoUnit.DAYS))
-                .build();
-        when(refreshTokenRepository.findByTokenHash(sha256(rawToken))).thenReturn(Optional.of(stored));
+        when(refreshTokenRepository.deleteByTokenHash(sha256(rawToken))).thenReturn(1);
 
         // Act
         authService.logout(rawToken);
 
         // Assert
-        verify(refreshTokenRepository).delete(stored);
+        verify(refreshTokenRepository).deleteByTokenHash(sha256(rawToken));
     }
 
     @Test
     void givenUnknownRefreshToken_whenLogout_thenNoOpWithoutError() {
         // Arrange
-        when(refreshTokenRepository.findByTokenHash(anyString())).thenReturn(Optional.empty());
+        when(refreshTokenRepository.deleteByTokenHash(anyString())).thenReturn(0);
 
         // Act & Assert
         authService.logout("unknown-token");
-        verify(refreshTokenRepository, never()).delete(any());
     }
 
     @Test
     void givenNullRefreshToken_whenLogout_thenNoOpWithoutTouchingRepository() {
         // Act & Assert
         authService.logout(null);
-        verify(refreshTokenRepository, never()).findByTokenHash(anyString());
+        verify(refreshTokenRepository, never()).deleteByTokenHash(anyString());
     }
     // endregion
 }
