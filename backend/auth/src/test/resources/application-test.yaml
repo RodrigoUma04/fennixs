@@ -4,3 +4,7 @@ app:
   security:
     jwt:
       secret: test-only-jwt-secret-not-used-for-anything-real
+      access-token-expiration-ms: 900000
+      refresh-token-expiration-ms: 2592000000
+    cookie-secure: false
+    cors-allowed-origins: []

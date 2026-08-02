@@ -16,7 +16,16 @@ paths:
               $ref: '#/components/schemas/RegisterRequestDto'
       responses:
         '201':
-          description: User registered successfully
+          description: User registered successfully. Sets access_token and refresh_token cookies.
+          headers:
+            Set-Cookie:
+              description: |
+                Two cookies are set:
+                - access_token: JWT; HttpOnly; Secure; SameSite=Strict; Path=/api/
+                - refresh_token: opaque token; HttpOnly; Secure; SameSite=Strict; Path=/api/auth/
+              schema:
+                type: string
+                example: "access_token=<jwt>; HttpOnly; Secure; SameSite=Strict; Path=/api/"
         '403':
           description: Invalid or missing setup token
           content:
@@ -36,6 +45,119 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
 
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+      responses:
+        '200':
+          description: Login successful. Sets access_token and refresh_token cookies.
+          headers:
+            Set-Cookie:
+              description: |
+                Two cookies are set:
+                - access_token: JWT; HttpOnly; Secure; SameSite=Strict; Path=/api/
+                - refresh_token: opaque token; HttpOnly; Secure; SameSite=Strict; Path=/api/auth/
+              schema:
+                type: string
+                example: "access_token=<jwt>; HttpOnly; Secure; SameSite=Strict; Path=/api/"
+        '401':
+          description: Invalid credentials
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: Validation error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      operationId: refreshToken
+      parameters:
+        - name: refresh_token
+          in: cookie
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Refresh successful. Rotates and sets new access_token and refresh_token cookies.
+          headers:
+            Set-Cookie:
+              description: |
+                Two cookies are set:
+                - access_token: JWT; HttpOnly; Secure; SameSite=Strict; Path=/api/
+                - refresh_token: opaque token; HttpOnly; Secure; SameSite=Strict; Path=/auth/
+              schema:
+                type: string
+                example: "access_token=<jwt>; HttpOnly; Secure; SameSite=Strict; Path=/api/"
+        '401':
+          description: Refresh token missing, invalid, or expired
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      operationId: logout
+      parameters:
+        - name: refresh_token
+          in: cookie
+          required: false
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Logged out. Refresh token is revoked and both cookies are cleared. Always succeeds, even if no valid session existed.
+          headers:
+            Set-Cookie:
+              description: Both access_token and refresh_token cookies are cleared (Max-Age=0).
+              schema:
+                type: string
+
+  /auth/verify:
+    get:
+      tags:
+        - Auth
+      operationId: verify
+      description: |
+        Internal endpoint used by Traefik's ForwardAuth middleware to authorize requests
+        to other services. Not intended for direct client use.
+      responses:
+        '200':
+          description: Valid session. Identity is returned via response headers.
+          headers:
+            X-User-Id:
+              schema:
+                type: string
+                format: uuid
+            X-User-Role:
+              schema:
+                type: string
+                enum: [OWNER, USER]
+        '401':
+          description: No valid session
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
 components:
   schemas:
     ProblemDetail:
@@ -53,6 +175,7 @@ components:
         instance:
           type: string
           format: uri
+
     ValidationProblemDetail:
       allOf:
         - $ref: '#/components/schemas/ProblemDetail'
@@ -63,6 +186,7 @@ components:
               additionalProperties:
                 type: string
               description: Map of field name to validation error message
+
     RegisterRequestDto:
       type: object
       required:
@@ -78,3 +202,15 @@ components:
           type: string
           minLength: 12
           maxLength: 128
+
+    LoginRequestDto:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string

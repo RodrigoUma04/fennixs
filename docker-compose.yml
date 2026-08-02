@@ -9,7 +9,7 @@ services:
       - ./docker/traefik.yml:/etc/traefik/traefik.yml
     labels:
       - 'traefik.http.middlewares.auth-verify.forwardauth.address=http://auth:8081/auth/verify'
-      - 'traefik.http.middlewares.auth-verify.forwardauth.authResponseHeaders=X-User-Id'
+      - 'traefik.http.middlewares.auth-verify.forwardauth.authResponseHeaders=X-User-Id,X-User-Role'
     networks:
       - services
     depends_on:

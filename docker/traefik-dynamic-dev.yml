@@ -1,0 +1,34 @@
+http:
+  routers:
+    auth:
+      rule: 'PathPrefix(`/auth/`)'
+      entryPoints:
+        - web
+      service: auth
+
+    core-api:
+      rule: 'PathPrefix(`/api/`)'
+      entryPoints:
+        - web
+      service: core-api
+      middlewares:
+        - auth-verify
+
+  services:
+    auth:
+      loadBalancer:
+        servers:
+          - url: 'http://host.docker.internal:8081'
+
+    core-api:
+      loadBalancer:
+        servers:
+          - url: 'http://host.docker.internal:8082'
+
+  middlewares:
+    auth-verify:
+      forwardAuth:
+        address: 'http://host.docker.internal:8081/auth/verify'
+        authResponseHeaders:
+          - X-User-Id
+          - X-User-Role

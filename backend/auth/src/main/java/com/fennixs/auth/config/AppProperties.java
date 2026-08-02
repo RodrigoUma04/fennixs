@@ -9,6 +9,6 @@ public record AppProperties(RegistrationProperties registration, SecurityPropert
     public record RegistrationProperties(boolean allow) {}
 
     public record SecurityProperties(JwtProperties jwt, boolean cookieSecure, List<String> corsAllowedOrigins) {
-        public record JwtProperties(String secret, long accessTokenExpirationMs) {}
+        public record JwtProperties(String secret, long accessTokenExpirationMs, long refreshTokenExpirationMs) {}
     }
 }

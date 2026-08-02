@@ -56,19 +56,19 @@ All requests go through the gateway:
 
 ### Environment variables
 
-| Variable                            | Required | Default | Description                                                           |
-| ----------------------------------- | -------- | ------- | --------------------------------------------------------------------- |
-| `DB_USERNAME`                       | yes      | —       | PostgreSQL username                                                   |
-| `DB_PASSWORD`                       | yes      | —       | PostgreSQL password                                                   |
-| `JWT_SECRET`                        | yes      | —       | Long random string used to sign tokens. App will not start without it |
-| `GATEWAY_PORT`                      | no       | `80`    | Host port for the gateway                                             |
-| `COOKIE_SECURE`                     | no       | `false` | Set to `true` when serving over HTTPS                                 |
-| `ALLOW_REGISTRATION`                | no       | `false` | Allow new user sign-ups                                               |
-| `TIMEZONE`                          | no       | `UTC`   | App timezone (e.g. `Europe/Brussels`)                                 |
-| `HEALTH_SHOW_DETAILS`               | no       | `never` | Set to `always` to expose full health details                         |
-| `LOGGING_STRUCTURED_FORMAT_CONSOLE` | no       | —       | Set to `logstash`, `ecs`, or `gelf` for structured logs               |
-| `AUTH_MEMORY_LIMIT`                 | no       | `512M`  | Memory cap for the auth service                                       |
-| `API_MEMORY_LIMIT`                  | no       | `512M`  | Memory cap for the core API service                                   |
+| Variable                            | Required | Default | Description                                                                                 |
+| ----------------------------------- | -------- | ------- | ------------------------------------------------------------------------------------------- |
+| `DB_USERNAME`                       | yes      | —       | PostgreSQL username                                                                         |
+| `DB_PASSWORD`                       | yes      | —       | PostgreSQL password                                                                         |
+| `JWT_SECRET`                        | yes      | —       | Random string of at least 32 characters, used to sign tokens. App will not start without it |
+| `GATEWAY_PORT`                      | no       | `80`    | Host port for the gateway                                                                   |
+| `COOKIE_SECURE`                     | no       | `false` | Set to `true` when serving over HTTPS                                                       |
+| `ALLOW_REGISTRATION`                | no       | `false` | Allow new user sign-ups                                                                     |
+| `TIMEZONE`                          | no       | `UTC`   | App timezone (e.g. `Europe/Brussels`)                                                       |
+| `HEALTH_SHOW_DETAILS`               | no       | `never` | Set to `always` to expose full health details                                               |
+| `LOGGING_STRUCTURED_FORMAT_CONSOLE` | no       | —       | Set to `logstash`, `ecs`, or `gelf` for structured logs                                     |
+| `AUTH_MEMORY_LIMIT`                 | no       | `512M`  | Memory cap for the auth service                                                             |
+| `API_MEMORY_LIMIT`                  | no       | `512M`  | Memory cap for the core API service                                                         |
 
 ## Contributing
 

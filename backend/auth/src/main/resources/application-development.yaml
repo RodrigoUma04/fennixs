@@ -15,6 +15,7 @@ app:
     jwt:
       secret: dev-secret-key-do-not-use-in-production
       access-token-expiration-ms: 900000
+      refresh-token-expiration-ms: 2592000000
     cookie-secure: false
     cors-allowed-origins:
       - http://localhost:4200

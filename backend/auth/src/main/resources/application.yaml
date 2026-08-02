@@ -66,5 +66,6 @@ app:
     jwt:
       secret: ${JWT_SECRET}
       access-token-expiration-ms: 900000
+      refresh-token-expiration-ms: 2592000000
     cookie-secure: ${COOKIE_SECURE:false}
     cors-allowed-origins: []
