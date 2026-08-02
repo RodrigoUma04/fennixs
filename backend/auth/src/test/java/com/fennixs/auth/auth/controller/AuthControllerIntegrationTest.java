@@ -208,6 +208,16 @@ class AuthControllerIntegrationTest {
     }
 
     @Test
+    void givenEmailRegisteredLowercase_whenLoginWithDifferentCasing_thenReturnOk() throws Exception {
+        // Arrange
+        persistUser(EMAIL, PASSWORD);
+
+        // Act & Assert
+        performLogin(LoginRequestDtoObjectMother.createLoginRequestDto("USER@FENNIXS.COM", PASSWORD))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void givenWrongPassword_whenLogin_thenReturnUnauthorizedWithGenericMessage() throws Exception {
         // Arrange
         persistUser(EMAIL, PASSWORD);

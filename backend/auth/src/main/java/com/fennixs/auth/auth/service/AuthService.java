@@ -45,10 +45,9 @@ public class AuthService {
         if (grant == Grant.DENIED) throw new AuthException("Invalid or missing setup token", HttpStatus.FORBIDDEN);
 
         try {
-            String email = request.email().trim().toLowerCase(Locale.ROOT);
             Role role = grant == Grant.SETUP_TOKEN ? Role.OWNER : Role.USER;
 
-            User user = createUser(email, request.password(), role);
+            User user = createUser(normalizeEmail(request.email()), request.password(), role);
 
             AuthTokens tokens = issueTokens(user);
 
@@ -64,7 +63,7 @@ public class AuthService {
     @Transactional
     public AuthTokens login(LoginRequestDto request) {
         User user = userRepository
-                .findByEmail(request.email())
+                .findByEmail(normalizeEmail(request.email()))
                 .filter(u -> u.matchesPassword(request.password(), passwordEncoder))
                 .orElseThrow(() -> new AuthException("Invalid credentials", HttpStatus.UNAUTHORIZED));
 
@@ -128,5 +127,8 @@ public class AuthService {
         return new AuthTokens(accessToken, rawRefreshToken);
     }
 
+    private static String normalizeEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
+    }
     // endregion
 }

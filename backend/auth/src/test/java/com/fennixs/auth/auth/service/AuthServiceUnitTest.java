@@ -215,6 +215,23 @@ class AuthServiceUnitTest {
     }
 
     @Test
+    void givenEmailWithMixedCaseAndWhitespace_whenLogin_thenEmailIsNormalizedForLookup() {
+        // Arrange
+        User user =
+                User.builder().email(EMAIL).passwordHash(HASH).role(Role.USER).build();
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(PASSWORD, HASH)).thenReturn(true);
+        when(jwtService.generateAccessToken(any(AuthPrincipal.class))).thenReturn(ACCESS_TOKEN);
+        LoginRequestDto request = LoginRequestDtoObjectMother.createLoginRequestDto("  User@Fennixs.COM  ", PASSWORD);
+
+        // Act
+        authService.login(request);
+
+        // Assert
+        verify(userRepository).findByEmail(EMAIL);
+    }
+
+    @Test
     void givenWrongPassword_whenLogin_thenThrowUnauthorizedWithGenericMessageAndIssueNoTokens() {
         // Arrange
         User user =
