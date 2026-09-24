@@ -91,7 +91,7 @@ Write the description in the imperative mood, as in "add", not "added" or "adds"
 
 ## Signing Your Commits
 
-Every commit must carry a `Signed-off-by` line. This is the [Developer Certificate of Origin](DCO), and by adding it you certify that you wrote the contribution, or otherwise have the right to submit it under this project's license.
+Every commit must carry a `Signed-off-by` line. This is the [Developer Certificate of Origin](../DCO), and by adding it you certify that you wrote the contribution, or otherwise have the right to submit it under this project's license.
 
 Git adds the line for you with `-s`:
 
@@ -129,8 +129,8 @@ Expect review comments. They are about the code, not about you.
 
 ## License
 
-Fennixs is licensed under the [AGPL-3.0-or-later](LICENSE). Contributions are accepted under the same license, and you keep the copyright on what you write.
-Significant contributors are listed in [AUTHORS](AUTHORS).
+Fennixs is licensed under the [AGPL-3.0-or-later](../LICENSE). Contributions are accepted under the same license, and you keep the copyright on what you write.
+Significant contributors are listed in [AUTHORS](../AUTHORS).
 
 
 ## Questions
