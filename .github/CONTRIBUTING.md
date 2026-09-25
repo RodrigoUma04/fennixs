@@ -22,6 +22,13 @@ Fennixs has no application code yet. Setup instructions will be added here with 
 Until then, contributions are limited to documentation and project configuration.
 
 
+## Architecture Decisions
+
+Decisions that shape how Fennixs is built are recorded in [docs/adr](../docs/adr), one file per decision, explaining what was chosen and what it commits us to.
+
+Read them before proposing anything substantial. If your change reverses or alters one of those decisions, it needs a new record superseding the old one rather than an edit to the existing file.
+
+
 ## Branch Naming
 
 Branches follow the [Conventional Branch](https://conventionalbranch.org/) specification: `<type>/<description>`.
