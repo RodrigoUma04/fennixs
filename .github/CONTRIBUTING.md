@@ -131,8 +131,6 @@ If you forget, amend the most recent commit with `git commit --amend -s`, or for
 
 The pull request **title** must also follow Conventional Commits, since it becomes the commit message when the branch is squashed. A description is required: explain what changed and why, and link any related issue.
 
-Expect review comments. They are about the code, not about you.
-
 
 ## License
 
