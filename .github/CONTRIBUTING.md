@@ -22,6 +22,17 @@ Fennixs has no application code yet. Setup instructions will be added here with 
 Until then, contributions are limited to documentation and project configuration.
 
 
+## AI Coding Agents
+
+If you work with an AI coding agent, [AGENTS.md](../AGENTS.md) in the repository root carries
+the constraints it needs: the architecture decisions it must not contradict, and the security
+rules that are easy to violate with code that looks perfectly ordinary. It is tool agnostic, and
+no assistant-specific configuration is committed to this repository.
+
+The standards for a contribution are the same either way. You are responsible for what you
+submit, and the sign-off certifies that you have the right to submit it.
+
+
 ## Architecture Decisions
 
 Decisions that shape how Fennixs is built are recorded in [docs/adr](../docs/adr), one file per decision, explaining what was chosen and what it commits us to.
