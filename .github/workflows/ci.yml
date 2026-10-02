@@ -11,9 +11,9 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
 
@@ -21,3 +21,35 @@ jobs:
       # locally cannot fail here.
       - name: Check formatting
         run: npx prettier@3.9.9 --check --ignore-path .prettierignore "**/*.{yml,yaml,json,md}"
+
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Relative links only. External URLs rot on their own schedule and would
+      # make this check fail for reasons nobody here can fix.
+      - name: Check relative links in markdown
+        run: |
+          errors="$(mktemp)"
+          while IFS= read -r file; do
+            dir="$(dirname "$file")"
+            grep -oE '\]\([^)]+\)' "$file" | sed -E 's/^\]\(//; s/\)$//' | while IFS= read -r target; do
+              case "$target" in
+                http://*|https://*|mailto:*|'#'*) continue ;;
+              esac
+              path="${target%%#*}"
+              [ -z "$path" ] && continue
+              if [ ! -e "$dir/$path" ]; then
+                printf '%s -> %s\n' "$file" "$target" >> "$errors"
+              fi
+            done
+          done < <(find . -name '*.md' -not -path './.git/*')
+
+          if [ -s "$errors" ]; then
+            while IFS= read -r line; do
+              printf '::error::broken relative link: %s\n' "$line"
+            done < "$errors"
+            exit 1
+          fi
+          echo "All relative links resolve."

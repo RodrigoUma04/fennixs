@@ -1,0 +1,37 @@
+version: 2
+updates:
+  # Pinned actions are dependencies like any other, and nothing else reports when
+  # one goes stale or its repository is archived.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    # The pull request title becomes the squash commit, and CI rejects a title
+    # that is not a Conventional Commit. Without this prefix every Dependabot
+    # pull request fails the title check.
+    commit-message:
+      prefix: ci
+    # Wait a week before proposing a new release, so a compromised or yanked
+    # version has time to be noticed by someone other than us. Security updates
+    # ignore this and still arrive immediately, which is the behaviour we want:
+    # a known CVE should not sit behind a cooldown. GitHub Actions supports
+    # default-days only, not the per-semver variants.
+    cooldown:
+      default-days: 7
+    # One pull request for all action bumps rather than one each.
+    groups:
+      actions:
+        patterns:
+          - '*'
+
+  # The Prettier mirror pinned in .pre-commit-config.yaml ages the same way, and
+  # the previous mirror sat archived for two years before anyone noticed. Keep
+  # its version in step with the one in ci.yml when a bump arrives.
+  - package-ecosystem: pre-commit
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+    cooldown:
+      default-days: 7
