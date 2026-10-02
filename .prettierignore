@@ -1,0 +1,9 @@
+# Prose where formatting carries meaning: deliberate double blank lines between
+# sections, and line lengths chosen for readability rather than a column limit.
+.github/*.md
+docs/adr/*.md
+AGENTS.md
+README.md
+
+# Local tooling, not part of the project.
+.remember/
