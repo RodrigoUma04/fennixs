@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # Pinned to the same version as the pre-commit hook, so a file that passes
+      # locally cannot fail here.
+      - name: Check formatting
+        run: npx prettier@3.9.9 --check --ignore-path .prettierignore "**/*.{yml,yaml,json,md}"
