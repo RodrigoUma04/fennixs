@@ -1,0 +1,50 @@
+name: DCO
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  sign-off:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # Every commit must carry a Signed-off-by line naming its own author, which
+      # is what CONTRIBUTING.md and the DCO require. SHAs come from the event
+      # payload through env rather than interpolation, as a habit worth keeping
+      # even where the value is GitHub's own.
+      - name: Check sign-offs
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # merge-base rather than base.sha directly, so commits that landed on
+          # the base branch after this pull request opened are not attributed here.
+          base="$(git merge-base "$BASE_SHA" "$HEAD_SHA")"
+          failed=0
+
+          # --no-merges: a merge commit introduces no work of its own, and git
+          # does not sign one off.
+          for sha in $(git rev-list --no-merges "$base".."$HEAD_SHA"); do
+            author="$(git show -s --format='%an <%ae>' "$sha")"
+            if git show -s --format='%B' "$sha" | grep -qiF "Signed-off-by: $author"; then
+              continue
+            fi
+            printf '::error::%s has no sign-off matching its author\n' "$sha"
+            printf '  author:   %s\n' "$author"
+            printf '  expected: Signed-off-by: %s\n' "$author"
+            failed=1
+          done
+
+          if [ "$failed" -ne 0 ]; then
+            printf '\nSign every commit on this branch with:\n'
+            printf '  git rebase --signoff %s\n' "$base"
+            printf 'then force push. See .github/CONTRIBUTING.md for the full policy.\n'
+            exit 1
+          fi

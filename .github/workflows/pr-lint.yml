@@ -1,0 +1,44 @@
+name: PR Lint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  title-and-description:
+    runs-on: ubuntu-latest
+    steps:
+      # The title becomes the commit message when the branch is squashed, so it
+      # has to parse as a Conventional Commit. These types must stay in step with
+      # the table in CONTRIBUTING.md.
+      - name: Check PR title
+        uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+
+      # Runs even if the title check failed, so one push reports both problems.
+      # The body reaches the shell through env rather than interpolation: it is
+      # attacker controlled, and ${{ }} is substituted before bash sees the line.
+      - name: Check PR description
+        if: always()
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if [ -z "$(printf '%s' "$BODY" | tr -d '[:space:]')" ]; then
+            echo "::error::A pull request description is required. Explain what changed and why."
+            exit 1
+          fi
