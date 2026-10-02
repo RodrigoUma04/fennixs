@@ -11,7 +11,7 @@ jobs:
   sign-off:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
@@ -33,6 +33,12 @@ jobs:
           # does not sign one off.
           for sha in $(git rev-list --no-merges "$base".."$HEAD_SHA"); do
             author="$(git show -s --format='%an <%ae>' "$sha")"
+
+            # Dependabot cannot sign off, and its commits are generated rather
+            # than contributed, so there is no copyright for the DCO to certify.
+            case "$author" in
+              'dependabot[bot] '*) continue ;;
+            esac
             if git show -s --format='%B' "$sha" | grep -qiF "Signed-off-by: $author"; then
               continue
             fi
