@@ -28,7 +28,7 @@ Decided, though none of it is built yet.
 | Frontend | Angular |
 | Statement importer | Python |
 | Database | PostgreSQL |
-| Authentication | Keycloak, over OpenID Connect |
+| Authentication | Keycloak, over OpenID Connect, with no provider-specific dependencies |
 | Deployment | Docker Compose for self-hosting |
 
 
