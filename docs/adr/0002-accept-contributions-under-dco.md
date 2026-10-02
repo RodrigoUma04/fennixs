@@ -6,7 +6,7 @@
 
 ## Context
 
-Fennixs has a second contributor and expects contributions from outside the maintainers. Without any agreement in place, each contributor keeps copyright on the code they write, and the project can only ever be relicensed with the permission of every one of them.
+Fennixs expects contributions from people outside the project. Without any agreement in place, each contributor keeps copyright on the code they write, and the project can only ever be relicensed with the permission of every one of them.
 
 Two mechanisms are normally used to address this:
 
@@ -36,8 +36,8 @@ Every contributor retains copyright on their own contributions. The `AUTHORS` fi
 
 **Relicensing now requires the agreement of every contributor.** Combined with [the AGPL licence choice](0001-use-agpl-3-0-for-licensing.md), this makes the project effectively AGPL permanently. There is no route to a proprietary licence, dual licensing, or a closed enterprise edition containing contributed code.
 
-**This decision is close to one-way.** Reversing it means collecting a CLA from everyone who has already contributed, which gets harder with every merged pull request. It is being made now, while there are two contributors, precisely because that is when it is cheap.
+**This decision is close to one-way.** Reversing it means collecting a CLA from everyone who has already contributed, which gets harder with every merged pull request. It is being made before that list has grown, precisely because that is when it is cheap.
 
 Sign-off is currently unenforced and relies on contributors following CONTRIBUTING. Until the DCO GitHub App or an equivalent check runs on pull requests, the requirement is honour system and unsigned commits can merge. Enforcement should land with the CI workflows.
 
-The maintainers should separately record what they intend regarding a future legal entity or commercial arrangement. The DCO settles what contributors grant the project; it says nothing about what the maintainers have agreed between themselves.
+If the project ever gains a second maintainer, what they intend regarding a future legal entity or commercial arrangement should be recorded separately. The DCO settles what contributors grant the project; it says nothing about what maintainers have agreed between themselves.
