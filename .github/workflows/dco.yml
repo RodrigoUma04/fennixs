@@ -28,6 +28,7 @@ jobs:
           # the base branch after this pull request opened are not attributed here.
           base="$(git merge-base "$BASE_SHA" "$HEAD_SHA")"
           failed=0
+          checked=0
 
           # --no-merges: a merge commit introduces no work of its own, and git
           # does not sign one off.
@@ -39,6 +40,7 @@ jobs:
             case "$author" in
               'dependabot[bot] '*) continue ;;
             esac
+            checked=$((checked + 1))
             if git show -s --format='%B' "$sha" | grep -qiF "Signed-off-by: $author"; then
               continue
             fi
@@ -53,4 +55,13 @@ jobs:
             printf '  git rebase --signoff %s\n' "$base"
             printf 'then force push. See .github/CONTRIBUTING.md for the full policy.\n'
             exit 1
+          fi
+
+          # Say what was verified. A check that passes silently cannot be told
+          # apart from one that examined nothing, which is how a broken range or
+          # a shallow clone would look.
+          if [ "$checked" -eq 0 ]; then
+            printf '::warning::No commits were checked. Expected at least one.\n'
+          else
+            printf '%d commit(s) checked, all signed off.\n' "$checked"
           fi
