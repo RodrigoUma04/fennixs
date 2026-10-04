@@ -122,11 +122,17 @@ Do not describe work as complete, verified, or passing unless a command was run 
 checked. Report what actually happened, including failures.
 
 
-## Conventions that do not exist yet
+## Conventions
 
-There are no Java, TypeScript, or Python conventions in this project, because there is no code
-to have conventions about. Formatting, naming, test structure, and package layout will be
-decided alongside the first service and documented here then.
+YAML, JSON and Markdown are formatted by [Prettier](https://prettier.io), enforced by a
+pre-commit hook and checked in CI. Files whose spacing carries meaning are excluded in
+`.prettierignore`, including the architecture decision records and this file. Do not reformat an
+excluded file to match a formatter, and keep the Prettier version in `.pre-commit-config.yaml`
+in step with the one pinned in `.github/workflows/ci.yml`.
+
+There are no Java, TypeScript or Python conventions yet, because there is no code to have
+conventions about. Naming, test structure and package layout will be decided alongside the first
+service and documented here then.
 
 Until that happens, do not invent them, and do not import conventions from another project as
 though they were established here. If a choice needs making, raise it rather than settling it

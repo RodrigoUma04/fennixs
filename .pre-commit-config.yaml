@@ -1,0 +1,11 @@
+# pre-commit looks for this file by this exact name. Install the hook with:
+#   pip install pre-commit && pre-commit install
+repos:
+  # rbubley's mirror, because pre-commit/mirrors-prettier was archived in 2024.
+  # Keep this version in step with the one pinned in .github/workflows/ci.yml,
+  # or the hook and CI will disagree about what correct formatting is.
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.9.9
+    hooks:
+      - id: prettier
+        types_or: [yaml, json, json5, markdown]

@@ -19,7 +19,8 @@ This project follows the [Contributor Covenant](CODE_OF_CONDUCT.md). By taking p
 
 Fennixs has no application code yet. Setup instructions will be added here with the first service, along with the versions of Java, Node, Python, and Docker the project targets.
 
-Until then, contributions are limited to documentation and project configuration.
+Until then, contributions are limited to documentation and project configuration. The one thing
+worth installing today is the formatting hook, covered under [Formatting](#formatting).
 
 
 ## AI Coding Agents
@@ -38,6 +39,29 @@ submit, and the sign-off certifies that you have the right to submit it.
 Decisions that shape how Fennixs is built are recorded in [docs/adr](../docs/adr), one file per decision, explaining what was chosen and what it commits us to.
 
 Read them before proposing anything substantial. If your change reverses or alters one of those decisions, it needs a new record superseding the old one rather than an edit to the existing file.
+
+
+## Formatting
+
+Formatting of YAML, JSON and Markdown is handled by [Prettier](https://prettier.io), and CI
+checks it on every pull request. Install the pre-commit hook so you find out before pushing
+rather than after:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+On every commit the hook reformats the files you staged. If it changed anything the commit
+stops, and you re-stage and commit again with the formatting already fixed. Skip the hook and
+nothing is lost, you just hear about it from a failed check after pushing instead.
+
+Prose where the formatting carries meaning is excluded in `.prettierignore`: the architecture
+decision records, this file, the README and `AGENTS.md` all use deliberate spacing and line
+lengths that a formatter would flatten.
+
+The hook and CI pin the same Prettier version. If you change one, change the other, or files
+that pass locally will fail in CI.
 
 
 ## Branch Naming
