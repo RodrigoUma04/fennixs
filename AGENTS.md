@@ -35,6 +35,7 @@ not advisory, and several of them exist specifically to prevent plausible-lookin
 | ADR-0004 | Keycloak is the shipped identity provider |
 | ADR-0005 | Browsers authenticate with a server-side session, not a token in the browser |
 | ADR-0006 | Row ownership is enforced by PostgreSQL, not by query discipline |
+| ADR-0007 | Realm configuration ships as an import, with the updater deferred |
 
 **Records are immutable once accepted.** If a change contradicts one, write a new record that
 supersedes it. Never edit an accepted record to match new code.
