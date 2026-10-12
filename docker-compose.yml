@@ -1,0 +1,77 @@
+services:
+  fennixs-keycloak:
+    image: ghcr.io/rodrigouma04/fennixs-keycloak:latest
+    restart: unless-stopped
+    build: ./keycloak
+    ports:
+      - '${FENNIXS_HTTP_PORT:-8080}:8080'
+      - '${FENNIXS_HTTPS_PORT:-8443}:8443'
+    environment:
+      - KC_DB_URL_HOST=fennixs-postgres
+      - KC_DB_URL_DATABASE=fennixs_keycloak
+      - KC_DB_USERNAME=fennixs_keycloak
+      - KC_DB_PASSWORD=${AUTH_DB_PASSWORD:?set AUTH_DB_PASSWORD in .env}
+      - KC_HOSTNAME=${FENNIXS_HOSTNAME:?set FENNIXS_HOSTNAME to the address clients reach Keycloak at}
+      - KC_BOOTSTRAP_ADMIN_USERNAME
+      - KC_BOOTSTRAP_ADMIN_PASSWORD
+      - KC_HTTP_MANAGEMENT_SCHEME=http
+      - KC_HTTPS_CERTIFICATE_FILE
+      - KC_HTTPS_CERTIFICATE_KEY_FILE
+      - KC_HTTP_ENABLED=${ENABLE_HTTP:-false}
+      - FENNIXS_REGISTRATION_ALLOWED
+      - FENNIXS_SSL_REQUIRED
+    volumes:
+      - '${FENNIXS_CERTS_DIR:-fennixs-certs}:/opt/keycloak/conf/certs:ro'
+      - fennixs-keycloak-state:/opt/keycloak/data/state
+    depends_on:
+      fennixs-postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - 'CMD-SHELL'
+        - |
+          exec 3<>/dev/tcp/127.0.0.1/9000;
+          echo -e "GET /health/ready HTTP/1.1\r\nHost: localhost:9000\r\nConnection: close\r\n\r\n" >&3;
+          if cat <&3 | grep -q "\"status\": \"UP\""; then
+            exit 0
+          else
+            exit 1
+          fi
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    networks:
+      - database
+
+  fennixs-postgres:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      - KEYCLOAK_DB_NAME=fennixs_keycloak
+      - KEYCLOAK_DB_USER=fennixs_keycloak
+      - KEYCLOAK_DB_PASSWORD=${AUTH_DB_PASSWORD:?set AUTH_DB_PASSWORD in .env}
+    volumes:
+      - fennixs-postgres:/var/lib/postgresql
+      - ./docker/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+    shm_size: 128mb
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - database
+
+networks:
+  database:
+    driver: bridge
+
+volumes:
+  fennixs-postgres:
+  fennixs-keycloak-state:
+  fennixs-certs:

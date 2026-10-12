@@ -1,0 +1,13 @@
+{
+  "realm": "fennixs",
+  "enabled": true,
+  "displayName": "Fennixs",
+  "attributes": {
+    "fennixs.config.version": "1"
+  },
+  "registrationAllowed": "${FENNIXS_REGISTRATION_ALLOWED:false}",
+  "sslRequired": "${FENNIXS_SSL_REQUIRED:external}",
+  "revokeRefreshToken": true,
+  "bruteForceProtected": true,
+  "passwordPolicy": "length(12) and notUsername(undefined) and notEmail(undefined) and passwordHistory(3)"
+}
