@@ -18,7 +18,6 @@ services:
       - KC_HTTPS_CERTIFICATE_FILE
       - KC_HTTPS_CERTIFICATE_KEY_FILE
       - KC_HTTP_ENABLED=${ENABLE_HTTP:-false}
-      - FENNIXS_REGISTRATION_ALLOWED
       - FENNIXS_SSL_REQUIRED
     volumes:
       - '${FENNIXS_CERTS_DIR:-fennixs-certs}:/opt/keycloak/conf/certs:ro'

@@ -5,7 +5,7 @@
   "attributes": {
     "fennixs.config.version": "1"
   },
-  "registrationAllowed": "${FENNIXS_REGISTRATION_ALLOWED:false}",
+  "registrationAllowed": false,
   "sslRequired": "${FENNIXS_SSL_REQUIRED:external}",
   "revokeRefreshToken": true,
   "bruteForceProtected": true,

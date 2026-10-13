@@ -19,4 +19,20 @@ if [ -n "$VERSION" ]; then
     echo "FENNIXS: warning: could not write $MARKER, version changes will not be reported"
 fi
 
+# Realm settings are written by the import, which runs only when the realm does not
+# already exist, so editing one of these later is ignored without any error. The
+# default below has to match the one in realm-config.json. See ADR-0008.
+REALM_MARKER=/opt/keycloak/data/state/realm-settings
+SETTINGS="sslRequired=${FENNIXS_SSL_REQUIRED:-external}"
+PREVIOUS_SETTINGS=$(cat "$REALM_MARKER" 2>/dev/null || true)
+
+if [ -n "$PREVIOUS_SETTINGS" ] && [ "$PREVIOUS_SETTINGS" != "$SETTINGS" ]; then
+  echo "FENNIXS: $PREVIOUS_SETTINGS -> $SETTINGS was not applied. Realm settings are"
+  echo "FENNIXS: written on the first start only. Change it in the admin console under"
+  echo "FENNIXS: Realm settings > General > Require SSL, or this start has no effect."
+fi
+
+{ printf '%s\n' "$SETTINGS" > "$REALM_MARKER" ; } 2>/dev/null ||
+  echo "FENNIXS: warning: could not write $REALM_MARKER, realm setting changes will not be reported"
+
 exec /opt/keycloak/bin/kc.sh "$@"
