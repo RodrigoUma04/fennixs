@@ -1,6 +1,6 @@
 # Ship realm configuration by import
 
-- **Status:** Accepted
+- **Status:** Accepted. Operator configuration claim superseded by [ADR-0008](0008-split-operator-configuration-by-where-keycloak-stores-it.md)
 - **Date:** 2026-10-04
 
 
