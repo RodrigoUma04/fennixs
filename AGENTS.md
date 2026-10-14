@@ -113,11 +113,15 @@ can change realm configuration, `manage-realm`, can also rebind the realm's brow
 permits signing in as any user without their password, so holding it would turn a `core-api`
 compromise into an identity provider compromise.
 
-**Operator configuration is an environment variable only where Keycloak reads one.** Hostname,
-TLS, ports and the database are startup options and change on any restart. Settings Keycloak
-stores in the realm, such as `sslRequired`, SMTP and the registration toggle, are written by the
-import and only when the realm does not yet exist, so a later edit is silently ignored. See
-ADR-0008.
+**An operator environment variable is live only where something re-reads it.** Keycloak reads
+hostname, TLS and the database settings at startup, so a new value applies on the next start.
+Compose resolves the published ports and the certificate directory, so those apply when the
+container is recreated rather than restarted. Settings Keycloak stores in the realm, such as
+`sslRequired`, SMTP and the registration toggle, are written by the import and only when the
+realm does not yet exist, so a later edit is silently ignored. See ADR-0008. Postgres writes
+both passwords into the database during `initdb`, so a later edit rotates nothing and needs
+an `ALTER ROLE`: the Keycloak role then fails loudly, while the superuser keeps its old
+password with the stack still reporting healthy.
 
 
 ## Writing
