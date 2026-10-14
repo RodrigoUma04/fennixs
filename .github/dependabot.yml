@@ -1,4 +1,9 @@
 version: 2
+# Every entry below waits seven days on a new release: long enough for a compromised
+# or yanked version to be reported by someone else before it reaches a pull request
+# here, and nothing in this repository needs a bump sooner. Dependabot's own default
+# is three days. Security updates ignore the cooldown, so a known vulnerability still
+# arrives at once.
 updates:
   # Pinned actions are dependencies like any other, and nothing else reports when
   # one goes stale or its repository is archived.
@@ -47,6 +52,6 @@ updates:
     schedule:
       interval: monthly
     commit-message:
-      prefix: fix!
+      prefix: 'fix!:'
     cooldown:
       default-days: 7
