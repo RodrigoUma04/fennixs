@@ -1,5 +1,5 @@
-#!/bin/bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
 : "${KEYCLOAK_DB_NAME:?init-db.sh needs KEYCLOAK_DB_NAME}"
 : "${KEYCLOAK_DB_USER:?init-db.sh needs KEYCLOAK_DB_USER}"
