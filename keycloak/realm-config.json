@@ -7,7 +7,17 @@
   },
   "registrationAllowed": false,
   "sslRequired": "${FENNIXS_SSL_REQUIRED:external}",
+  "ssoSessionIdleTimeout": 1209600,
+  "ssoSessionMaxLifespan": 2592000,
   "revokeRefreshToken": true,
+  "offlineSessionMaxLifespanEnabled": true,
+  "offlineSessionMaxLifespan": 2592000,
+  "actionTokenGeneratedByUserLifespan": 1800,
   "bruteForceProtected": true,
+  "failureFactor": 30,
+  "eventsEnabled": true,
+  "eventsExpiration": 7776000,
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": true,
   "passwordPolicy": "length(12) and notUsername(undefined) and notEmail(undefined) and passwordHistory(3)"
 }
