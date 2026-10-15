@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+: "${POSTGRES_USER:?init-db.sh needs POSTGRES_USER}"
+: "${POSTGRES_DB:?init-db.sh needs POSTGRES_DB}"
 : "${KEYCLOAK_DB_NAME:?init-db.sh needs KEYCLOAK_DB_NAME}"
 : "${KEYCLOAK_DB_USER:?init-db.sh needs KEYCLOAK_DB_USER}"
 : "${KEYCLOAK_DB_PASSWORD:?init-db.sh needs KEYCLOAK_DB_PASSWORD}"
