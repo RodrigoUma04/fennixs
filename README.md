@@ -4,7 +4,7 @@
 
 A self-hosted personal finance tracker for individuals who want to own their financial data outright.
 
-> **Status:** Early development. There is no working software yet and nothing here is installable. This repository currently holds project documentation only.
+> **Status:** Early development. There is no working software yet and nothing here is installable. The repository holds the project's documentation and the container configuration a self-hosted instance will run on.
 
 
 ## What Fennixs aims to be

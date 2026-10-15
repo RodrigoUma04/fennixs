@@ -1,6 +1,6 @@
 # Use Keycloak as the identity provider
 
-- **Status:** Accepted
+- **Status:** Accepted. Configuration mechanism superseded by [ADR-0007](0007-ship-realm-configuration-by-import.md); operator configuration claim and the registration toggle by [ADR-0008](0008-split-operator-configuration-by-where-keycloak-stores-it.md)
 - **Date:** 2026-10-02
 
 

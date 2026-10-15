@@ -1,0 +1,3 @@
+# Git rewrites line endings on Windows by default, and a CRLF shebang names an
+# interpreter that does not exist, so a checked-out script fails with exit 127.
+*.sh text eol=lf

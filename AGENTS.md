@@ -11,11 +11,14 @@ applies to agents too, and this file does not repeat it.
 ## Project state
 
 Fennixs is a self-hosted personal finance tracker. **There is no application code yet.** The
-repository holds licensing, community health files, and architecture decision records.
+repository holds licensing, community health files, architecture decision records, and the
+container configuration a self-hosted instance runs on.
 
-Planned: Java and Spring Boot for `core-api`, Angular for the frontend, Python for the
-statement importer, PostgreSQL, Keycloak for authentication, Docker Compose for self-hosting.
-None of it is written.
+Written: `keycloak/`, a wrapped Keycloak image carrying the realm configuration; the root
+`docker-compose.yml` with its own PostgreSQL; `docker/init-db.sh`; `.env.example`.
+
+Planned and not written: Java and Spring Boot for `core-api`, Angular for the frontend, Python
+for the statement importer.
 
 This matters for how you work here. Most requests are documentation, configuration, or design
 discussion. If you are about to generate application code, check that it was actually asked
@@ -35,6 +38,8 @@ not advisory, and several of them exist specifically to prevent plausible-lookin
 | ADR-0004 | Keycloak is the shipped identity provider |
 | ADR-0005 | Browsers authenticate with a server-side session, not a token in the browser |
 | ADR-0006 | Row ownership is enforced by PostgreSQL, not by query discipline |
+| ADR-0007 | Realm configuration ships as an import, with the updater deferred |
+| ADR-0008 | Realm-stored operator settings are first-start defaults, not live configuration |
 
 **Records are immutable once accepted.** If a change contradicts one, write a new record that
 supersedes it. Never edit an accepted record to match new code.
@@ -104,9 +109,19 @@ a separate service outside this repository. Fennixs receives a neutral account-e
 never learns what a subscription is.
 
 **Application features do not get Keycloak admin credentials.** The narrowest Keycloak role that
-can change realm configuration also rewrites authentication flows and registers clients, so
-holding it would turn a `core-api` compromise into an identity provider compromise. Operator
-configuration belongs in environment variables.
+can change realm configuration, `manage-realm`, can also rebind the realm's browser flow, which
+permits signing in as any user without their password, so holding it would turn a `core-api`
+compromise into an identity provider compromise.
+
+**An operator environment variable is live only where something re-reads it.** Keycloak reads
+hostname, TLS and the database settings at startup, so a new value applies on the next start.
+Compose resolves the published ports and the certificate directory, so those apply when the
+container is recreated rather than restarted. Settings Keycloak stores in the realm, such as
+`sslRequired`, SMTP and the registration toggle, are written by the import and only when the
+realm does not yet exist, so a later edit is silently ignored. See ADR-0008. Postgres writes
+both passwords into the database during `initdb`, so a later edit rotates nothing and needs
+an `ALTER ROLE`: the Keycloak role then fails loudly, while the superuser keeps its old
+password with the stack still reporting healthy.
 
 
 ## Writing
@@ -129,6 +144,11 @@ pre-commit hook and checked in CI. Files whose spacing carries meaning are exclu
 `.prettierignore`, including the architecture decision records and this file. Do not reformat an
 excluded file to match a formatter, and keep the Prettier version in `.pre-commit-config.yaml`
 in step with the one pinned in `.github/workflows/ci.yml`.
+
+Shell scripts are POSIX `sh` unless they need more, open with `set -eu` (`set -euo pipefail`
+under bash), and guard every required variable with `: "${VAR:?message}"` rather than failing
+later. `.gitattributes` pins them to LF: a CRLF shebang names an interpreter that does not
+exist, and the resulting exit 127 is reported as a missing file.
 
 There are no Java, TypeScript or Python conventions yet, because there is no code to have
 conventions about. Naming, test structure and package layout will be decided alongside the first
