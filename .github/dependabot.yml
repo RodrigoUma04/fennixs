@@ -2,8 +2,11 @@ version: 2
 # Every entry below waits seven days on a new release: long enough for a compromised
 # or yanked version to be reported by someone else before it reaches a pull request
 # here, and nothing in this repository needs a bump sooner. Dependabot's own default
-# is three days. Security updates ignore the cooldown, so a known vulnerability still
-# arrives at once.
+# is three days. Only the github-actions entry also receives security updates, and
+# those ignore the cooldown. Dependabot raises none for pre-commit, docker or
+# docker-compose, so a published vulnerability in the Keycloak or Postgres image
+# waits for that entry's own schedule, which is why the Keycloak image is checked
+# weekly.
 updates:
   # Pinned actions are dependencies like any other, and nothing else reports when
   # one goes stale or its repository is archived.
@@ -38,7 +41,7 @@ updates:
   - package-ecosystem: docker
     directory: /keycloak
     schedule:
-      interval: monthly
+      interval: weekly
     commit-message:
       prefix: fix
     cooldown:
