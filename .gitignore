@@ -1,1 +1,5 @@
 .env
+
+# TLS material, because FENNIXS_CERTS_DIR may be a path inside this tree
+*.pem
+/certs/
