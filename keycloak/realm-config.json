@@ -12,7 +12,7 @@
   "revokeRefreshToken": true,
   "offlineSessionMaxLifespanEnabled": true,
   "offlineSessionMaxLifespan": 2592000,
-  "actionTokenGeneratedByUserLifespan": 1800,
+  "actionTokenGeneratedByUserLifespan": 600,
   "actionTokenGeneratedByAdminLifespan": 3600,
   "bruteForceProtected": true,
   "failureFactor": 30,
