@@ -12,6 +12,19 @@ if [ "${1:-}" != "start" ]; then
   exec /opt/keycloak/bin/kc.sh "$@"
 fi
 
+# Compose publishes one port and gives both listeners 8080, so the mode decides which
+# scheme owns it. Asking for both leaves Keycloak throwing an uncaught Vert.x exception
+# that names neither a port nor an option, so refuse it here instead. In practice this
+# is two mode blocks uncommented in .env, which Compose merges without complaint.
+if [ "${KC_HTTP_ENABLED:-false}" = "true" ] &&
+  { [ -n "${KC_HTTPS_CERTIFICATE_FILE:-}" ] || [ -n "${KC_HTTPS_KEY_STORE_FILE:-}" ]; }; then
+  echo "FENNIXS: KC_HTTP_ENABLED is true and HTTPS key material is configured, so both" >&2
+  echo "FENNIXS: listeners want port 8080 and neither would answer. Uncomment exactly one" >&2
+  echo "FENNIXS: mode block in .env: ENABLE_HTTP=true for Mode 1 or 3, or the certificate" >&2
+  echo "FENNIXS: lines for Mode 2." >&2
+  exit 1
+fi
+
 STATE=/opt/keycloak/data/state
 MARKER="$STATE/keycloak-version"
 REALM_MARKER="$STATE/realm-settings"
