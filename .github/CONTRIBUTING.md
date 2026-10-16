@@ -43,9 +43,10 @@ Read them before proposing anything substantial. If your change reverses or alte
 
 ## Formatting
 
-Formatting of YAML, JSON and Markdown is handled by [Prettier](https://prettier.io), and CI
-checks it on every pull request. Install the pre-commit hook so you find out before pushing
-rather than after:
+Formatting of YAML, JSON and Markdown is handled by [Prettier](https://prettier.io), and Java
+and SQL in `core-api` by [Spotless](https://github.com/diffplug/spotless) with Palantir Java
+Format. CI checks both on every pull request. Install the pre-commit hook so you find out before
+pushing rather than after:
 
 ```bash
 pip install pre-commit
