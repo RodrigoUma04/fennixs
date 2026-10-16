@@ -22,6 +22,16 @@ jobs:
       - name: Check formatting
         run: npx prettier@3.9.9 --check --ignore-path .prettierignore "**/*.{yml,yaml,json,md}"
 
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Preinstalled on the runner image, so there is no action to pin. Every
+      # tracked script is checked, so a new one cannot be forgotten here.
+      - name: Lint shell scripts
+        run: git ls-files -z '*.sh' | xargs -0 shellcheck
+
   links:
     runs-on: ubuntu-latest
     steps:
