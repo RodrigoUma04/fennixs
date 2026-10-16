@@ -1,3 +1,17 @@
 spring:
   application:
     name: core-api
+  config:
+    import: optional:file:../.env[.properties]
+  datasource:
+    url: jdbc:postgresql://${CORE_DB_HOST:localhost}:5432/fennixs_core
+    username: fennixs_app
+    password: ${CORE_APP_PASSWORD}
+  flyway:
+    user: fennixs_migrator
+    password: ${CORE_MIGRATOR_PASSWORD}
+  jpa:
+    open-in-view: false
+
+server:
+  port: 8081
