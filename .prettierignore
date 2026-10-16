@@ -5,5 +5,9 @@ docs/adr/*.md
 AGENTS.md
 README.md
 
+# Written by release-please, which uses its own list markers and spacing. Letting
+# Prettier reformat them would fail this check on every release pull request.
+CHANGELOG.md
+
 # Local tooling, not part of the project.
 .remember/

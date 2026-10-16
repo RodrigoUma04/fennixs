@@ -1,6 +1,6 @@
 services:
   fennixs-keycloak:
-    image: ghcr.io/rodrigouma04/fennixs-keycloak:latest
+    image: rodrigouma04/fennixs-keycloak:latest
     restart: unless-stopped
     build: ./keycloak
     ports:
