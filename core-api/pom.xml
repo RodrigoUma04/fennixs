@@ -32,7 +32,6 @@
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <openapi-generator.version>7.26.0</openapi-generator.version>
         <spotless.version>3.10.4</spotless.version>
-        <palantir-format.version>2.102.0</palantir-format.version>
     </properties>
     <dependencies>
         <dependency>
@@ -224,7 +223,6 @@
                         </includes>
 
                         <palantirJavaFormat>
-                            <version>${palantir-format.version}</version>
                             <style>PALANTIR</style>
                             <formatJavadoc>false</formatJavadoc>
                         </palantirJavaFormat>
