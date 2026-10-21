@@ -150,10 +150,16 @@ under bash), and guard every required variable with `: "${VAR:?message}"` rather
 later. `.gitattributes` pins them to LF: a CRLF shebang names an interpreter that does not
 exist, and the resulting exit 127 is reported as a missing file.
 
-There are no Java, TypeScript or Python conventions yet, because there is no code to have
-conventions about. Naming, test structure and package layout will be decided alongside the first
-service and documented here then.
+Java in `core-api` is formatted by [Spotless](https://github.com/diffplug/spotless) with Palantir
+Java Format, enforced by the same pre-commit hook and by `./mvnw verify`. Packages are by feature
+and flat, directly under `com.fennixs.coreapi`, with no layer sub-packages: Java visibility does
+not nest, so a flat package is what lets a repository stay package-private and reachable only
+through its service.
 
-Until that happens, do not invent them, and do not import conventions from another project as
-though they were established here. If a choice needs making, raise it rather than settling it
-silently.
+Tests follow Arrange-Act-Assert, with the sections marked by `// arrange`, `// act` and
+`// assert` comments; leave out the arrange comment when there is nothing to arrange rather than
+leaving it empty. Test method names take the form `given<Context>_when<Action>_then<Outcome>`.
+
+There are no TypeScript or Python conventions yet, and the Java ones above are all that is
+settled. Do not invent more, and do not import conventions from another project as though they
+were established here. If a choice needs making, raise it rather than settling it silently.
