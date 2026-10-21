@@ -10,15 +10,16 @@ applies to agents too, and this file does not repeat it.
 
 ## Project state
 
-Fennixs is a self-hosted personal finance tracker. **There is no application code yet.** The
-repository holds licensing, community health files, architecture decision records, and the
-container configuration a self-hosted instance runs on.
+Fennixs is a self-hosted personal finance tracker in early development. **Application code has
+only just started.** The repository holds licensing, community health files, architecture
+decision records, the container configuration a self-hosted instance runs on, and the start of
+`core-api`.
 
 Written: `keycloak/`, a wrapped Keycloak image carrying the realm configuration; the root
-`docker-compose.yml` with its own PostgreSQL; `docker/init-db.sh`; `.env.example`.
+`docker-compose.yml` with its own PostgreSQL; `docker/init-db.sh`; `.env.example`; `core-api/`,
+a Spring Boot service with its build, database roles and CI in place but no features yet.
 
-Planned and not written: Java and Spring Boot for `core-api`, Angular for the frontend, Python
-for the statement importer.
+Planned and not written: Angular for the frontend, Python for the statement importer.
 
 This matters for how you work here. Most requests are documentation, configuration, or design
 discussion. If you are about to generate application code, check that it was actually asked
