@@ -20,5 +20,28 @@
   "eventsExpiration": 7776000,
   "adminEventsEnabled": true,
   "adminEventsDetailsEnabled": true,
-  "passwordPolicy": "length(12) and notUsername(undefined) and notEmail(undefined) and passwordHistory(3)"
+  "passwordPolicy": "length(12) and notUsername(undefined) and notEmail(undefined) and passwordHistory(3)",
+  "clients": [
+    {
+      "clientId": "fennixs-core-api",
+      "enabled": true,
+      "secret": "${CORE_CLIENT_SECRET}",
+      "directAccessGrantsEnabled": false,
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": false,
+      "redirectUris": ["http://localhost:8081/login/oauth2/code/keycloak"],
+      "webOrigins": [],
+      "defaultClientScopes": ["acr", "basic", "email"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:8081",
+        "backchannel.logout.url": "http://localhost:8081/logout/connect/back-channel/keycloak",
+        "backchannel.logout.session.required": "true",
+        "client.secret.authentication.allowed.method": "client_secret_basic"
+      }
+    }
+  ]
 }

@@ -22,6 +22,7 @@ services:
       - KC_PROXY_HEADERS
       - KC_PROXY_TRUSTED_ADDRESSES
       - FENNIXS_SSL_REQUIRED=${FENNIXS_SSL_REQUIRED:-external}
+      - CORE_CLIENT_SECRET=${CORE_CLIENT_SECRET:?set CORE_CLIENT_SECRET in .env}
     volumes:
       - '${FENNIXS_CERTS_DIR:-fennixs-certs}:/opt/keycloak/conf/certs:ro'
       - fennixs-keycloak-state:/opt/keycloak/data/state
