@@ -9,3 +9,12 @@ repos:
     hooks:
       - id: prettier
         types_or: [yaml, json, json5, markdown]
+
+  - repo: local
+    hooks:
+      - id: spotless
+        name: spotless
+        entry: core-api/mvnw -q -f core-api/pom.xml spotless:apply
+        language: system
+        files: ^core-api/.*\.(java|sql)$
+        pass_filenames: false

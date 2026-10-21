@@ -10,15 +10,16 @@ applies to agents too, and this file does not repeat it.
 
 ## Project state
 
-Fennixs is a self-hosted personal finance tracker. **There is no application code yet.** The
-repository holds licensing, community health files, architecture decision records, and the
-container configuration a self-hosted instance runs on.
+Fennixs is a self-hosted personal finance tracker in early development. **Application code has
+only just started.** The repository holds licensing, community health files, architecture
+decision records, the container configuration a self-hosted instance runs on, and the start of
+`core-api`.
 
 Written: `keycloak/`, a wrapped Keycloak image carrying the realm configuration; the root
-`docker-compose.yml` with its own PostgreSQL; `docker/init-db.sh`; `.env.example`.
+`docker-compose.yml` with its own PostgreSQL; `docker/init-db.sh`; `.env.example`; `core-api/`,
+a Spring Boot service with its build, database roles and CI in place but no features yet.
 
-Planned and not written: Java and Spring Boot for `core-api`, Angular for the frontend, Python
-for the statement importer.
+Planned and not written: Angular for the frontend, Python for the statement importer.
 
 This matters for how you work here. Most requests are documentation, configuration, or design
 discussion. If you are about to generate application code, check that it was actually asked
@@ -150,10 +151,16 @@ under bash), and guard every required variable with `: "${VAR:?message}"` rather
 later. `.gitattributes` pins them to LF: a CRLF shebang names an interpreter that does not
 exist, and the resulting exit 127 is reported as a missing file.
 
-There are no Java, TypeScript or Python conventions yet, because there is no code to have
-conventions about. Naming, test structure and package layout will be decided alongside the first
-service and documented here then.
+Java in `core-api` is formatted by [Spotless](https://github.com/diffplug/spotless) with Palantir
+Java Format, enforced by the same pre-commit hook and by `./mvnw verify`. Packages are by feature
+and flat, directly under `com.fennixs.coreapi`, with no layer sub-packages: Java visibility does
+not nest, so a flat package is what lets a repository stay package-private and reachable only
+through its service.
 
-Until that happens, do not invent them, and do not import conventions from another project as
-though they were established here. If a choice needs making, raise it rather than settling it
-silently.
+Tests follow Arrange-Act-Assert, with the sections marked by `// arrange`, `// act` and
+`// assert` comments; leave out the arrange comment when there is nothing to arrange rather than
+leaving it empty. Test method names take the form `given<Context>_when<Action>_then<Outcome>`.
+
+There are no TypeScript or Python conventions yet, and the Java ones above are all that is
+settled. Do not invent more, and do not import conventions from another project as though they
+were established here. If a choice needs making, raise it rather than settling it silently.

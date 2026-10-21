@@ -51,6 +51,11 @@ services:
       - KEYCLOAK_DB_NAME=fennixs_keycloak
       - KEYCLOAK_DB_USER=fennixs_keycloak
       - KEYCLOAK_DB_PASSWORD=${AUTH_DB_PASSWORD:?set AUTH_DB_PASSWORD in .env}
+      - CORE_DB_NAME=fennixs_core
+      - CORE_MIGRATOR_USER=fennixs_migrator
+      - CORE_MIGRATOR_PASSWORD=${CORE_MIGRATOR_PASSWORD:?set CORE_MIGRATOR_PASSWORD in .env}
+      - CORE_APP_USER=fennixs_app
+      - CORE_APP_PASSWORD=${CORE_APP_PASSWORD:?set CORE_APP_PASSWORD in .env}
     volumes:
       - fennixs-postgres:/var/lib/postgresql
       - ./docker/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro

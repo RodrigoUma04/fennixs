@@ -17,10 +17,40 @@ This project follows the [Contributor Covenant](CODE_OF_CONDUCT.md). By taking p
 
 ## Development Setup
 
-Fennixs has no application code yet. Setup instructions will be added here with the first service, along with the versions of Java, Node, Python, and Docker the project targets.
+You need Docker with Compose, and Java 25 for `core-api` (Temurin is what CI uses). Maven comes
+with the project as `./mvnw`, so there is nothing else to install. Also install the formatting
+hook, covered under [Formatting](#formatting).
 
-Until then, contributions are limited to documentation and project configuration. The one thing
-worth installing today is the formatting hook, covered under [Formatting](#formatting).
+Copy `.env.example` to `.env`, fill in the passwords under Required, then add these lines in
+place of a mode block:
+
+```bash
+ENABLE_HTTP=true
+FENNIXS_PORT=80
+FENNIXS_BIND_ADDRESS=127.0.0.1
+COMPOSE_FILE=docker-compose.yml:docker-compose.dev.yml
+```
+
+`FENNIXS_BIND_ADDRESS` keeps Keycloak off your network, and `COMPOSE_FILE` adds the development
+file, which publishes PostgreSQL on `127.0.0.1:5432` so `core-api` can reach it from your IDE.
+If something already holds port 80, pick another `FENNIXS_PORT`; `core-api` uses 8081.
+
+Start the stack, then run `core-api` from your IDE or with Maven:
+
+```bash
+docker compose up -d
+cd core-api && ./mvnw spring-boot:run
+```
+
+Keycloak is then at `http://localhost` and `core-api` at `http://localhost:8081`. `core-api`
+reads the same `.env`, so there is no second configuration file.
+
+`./mvnw verify` builds, tests and checks formatting, exactly as CI does. The tests start their
+own PostgreSQL through Testcontainers and set it up with `docker/init-db.sh`, so they need Docker
+running but not the stack.
+
+`docker/init-db.sh` only runs when the database volume is empty. After it changes, recreate the
+volume with `docker compose down -v`, which also deletes your local Keycloak users.
 
 
 ## AI Coding Agents
@@ -43,9 +73,10 @@ Read them before proposing anything substantial. If your change reverses or alte
 
 ## Formatting
 
-Formatting of YAML, JSON and Markdown is handled by [Prettier](https://prettier.io), and CI
-checks it on every pull request. Install the pre-commit hook so you find out before pushing
-rather than after:
+Formatting of YAML, JSON and Markdown is handled by [Prettier](https://prettier.io), and Java
+and SQL in `core-api` by [Spotless](https://github.com/diffplug/spotless) with Palantir Java
+Format. CI checks both on every pull request. Install the pre-commit hook so you find out before
+pushing rather than after:
 
 ```bash
 pip install pre-commit
