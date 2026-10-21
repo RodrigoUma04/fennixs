@@ -20,7 +20,7 @@ jobs:
       # Pinned to the same version as the pre-commit hook, so a file that passes
       # locally cannot fail here.
       - name: Check formatting
-        run: npx prettier@3.9.9 --check --ignore-path .prettierignore "**/*.{yml,yaml,json,md}"
+        run: npx prettier@3.9.10 --check --ignore-path .prettierignore "**/*.{yml,yaml,json,md}"
 
   shellcheck:
     runs-on: ubuntu-latest
