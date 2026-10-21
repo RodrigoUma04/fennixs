@@ -47,6 +47,17 @@ updates:
     cooldown:
       default-days: 7
 
+  # core-api's dependencies and build plugins, including versions held in pom
+  # properties. Shipped to users like the Keycloak image, hence the same prefix.
+  - package-ecosystem: maven
+    directory: /core-api
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: fix
+    cooldown:
+      default-days: 7
+
   # Postgres in the compose stack. Its tag floats within a major, so operators get
   # minor releases on their own pull and this entry only ever proposes the next
   # major, which needs pg_upgrade and so is breaking for them.
