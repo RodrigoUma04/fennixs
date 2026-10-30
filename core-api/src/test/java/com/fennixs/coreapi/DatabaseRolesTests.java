@@ -1,6 +1,7 @@
 package com.fennixs.coreapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,16 @@ class DatabaseRolesTests {
 
         // assert
         assertThat(bypass).isFalse();
+    }
+
+    @Test
+    void givenApplicationRole_whenReadingMigrationHistory_thenPermissionDenied() {
+        // act
+        Throwable thrown =
+                catchThrowable(() -> jdbc.queryForObject("SELECT count(*) FROM flyway_schema_history", Long.class));
+
+        // assert
+        assertThat(thrown).rootCause().hasMessageContaining("permission denied for table flyway_schema_history");
     }
 
     @Test
