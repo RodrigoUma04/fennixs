@@ -16,14 +16,14 @@ spring:
     oauth2:
       client:
         registration:
-          keycloak:
+          oidc:
             client-id: ${FENNIXS_OIDC_CLIENT_ID:fennixs-core-api}
             client-secret: ${CORE_CLIENT_SECRET}
             client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code
             scope: openid,email
         provider:
-          keycloak:
+          oidc:
             issuer-uri: ${FENNIXS_OIDC_ISSUER_URI:http://localhost:8080/realms/fennixs}
 
 server:

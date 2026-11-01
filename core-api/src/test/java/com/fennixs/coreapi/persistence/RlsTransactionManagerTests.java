@@ -1,4 +1,4 @@
-package com.fennixs.coreapi;
+package com.fennixs.coreapi.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -29,6 +29,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
+import com.fennixs.coreapi.TestOidcConfiguration;
+import com.fennixs.coreapi.TestcontainersConfiguration;
 import com.fennixs.coreapi.security.FennixsOidcUser;
 
 @Import({TestcontainersConfiguration.class, TestOidcConfiguration.class})

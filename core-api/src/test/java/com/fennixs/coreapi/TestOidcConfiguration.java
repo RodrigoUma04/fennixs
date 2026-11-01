@@ -8,11 +8,11 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 
 @TestConfiguration(proxyBeanMethods = false)
-class TestOidcConfiguration {
+public class TestOidcConfiguration {
 
     @Bean
     ClientRegistrationRepository clientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(ClientRegistration.withRegistrationId("keycloak")
+        return new InMemoryClientRegistrationRepository(ClientRegistration.withRegistrationId("oidc")
                 .clientId("test")
                 .clientSecret("test")
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
