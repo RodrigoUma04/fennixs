@@ -32,13 +32,13 @@
       "implicitFlowEnabled": false,
       "serviceAccountsEnabled": false,
       "frontchannelLogout": false,
-      "redirectUris": ["http://localhost:8081/login/oauth2/code/keycloak"],
+      "redirectUris": ["http://localhost:8081/login/oauth2/code/oidc"],
       "webOrigins": [],
       "defaultClientScopes": ["acr", "basic", "email"],
       "attributes": {
         "pkce.code.challenge.method": "S256",
         "post.logout.redirect.uris": "http://localhost:8081",
-        "backchannel.logout.url": "http://localhost:8081/logout/connect/back-channel/keycloak",
+        "backchannel.logout.url": "http://localhost:8081/logout/connect/back-channel/oidc",
         "backchannel.logout.session.required": "true",
         "client.secret.authentication.allowed.method": "client_secret_basic"
       }
