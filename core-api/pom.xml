@@ -180,6 +180,7 @@
                             <generatorName>spring</generatorName>
                             <apiPackage>com.fennixs.coreapi.generated.api</apiPackage>
                             <modelPackage>com.fennixs.coreapi.generated.model</modelPackage>
+                            <modelNameSuffix>Dto</modelNameSuffix>
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <useSpringBoot4>true</useSpringBoot4>

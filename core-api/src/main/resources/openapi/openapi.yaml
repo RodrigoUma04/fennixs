@@ -2,4 +2,29 @@ openapi: 3.1.0
 info:
   title: Fennixs core-api
   version: 0.0.1
-paths: {}
+paths:
+  /api/me:
+    get:
+      tags: [users]
+      operationId: getCurrentUser
+      summary: The signed-in user
+      responses:
+        '200':
+          description: The signed-in user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUser'
+        '401':
+          description: No session
+components:
+  schemas:
+    CurrentUser:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: [string, 'null']
